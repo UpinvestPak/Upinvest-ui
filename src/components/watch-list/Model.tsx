@@ -45,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       </p>
 
       {/* Search Bar */}
-      <div className="relative mb-7">
+      <div className="relative md:mb-7 mb-3">
         <input
           type="text"
           placeholder="Search assets"
@@ -73,14 +73,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       </div>
 
       {/* Market List with Scrollbar */}
-      <div className="space-y-2 py-4 max-h-64 overflow-y-auto">
+      <div className="space-y-2 md:py-4  py-1 max-h-64 overflow-y-auto">
         {updatedMarkets.map((item) => (
           <div
             key={item.name}
             className="flex items-center justify-between rounded-md bg-white p-2 hover:bg-gray-100"
           >
             {/* Image and Text */}
-            <div className="flex items-start text-start space-x-0 md:space-x-1.5 ">
+            <div className="flex items-start text-start space-x-1 md:space-x-1.5 ">
             <img
                 src={item.icon}
                 alt={item.label}
