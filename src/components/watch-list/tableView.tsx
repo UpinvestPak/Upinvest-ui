@@ -298,18 +298,7 @@ const markets: MarketData[] = [
     currentPrice: 2550,
     changeDirection: "down",
   },
-  {
-    icon: "https://cryptologos.cc/logos/cardano-ada-logo.png?v=025",
-    name: "ADA",
-    company: "Cardano",
-    change: 0,
-    percentage: 0,
-    buyPrice: 1,
-    rangeLow: 0.5,
-    rangeHigh: 1.5,
-    currentPrice: 1,
-    changeDirection: "neutral",
-  },
+ 
   {
     icon: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=025",
     name: "BNB",
