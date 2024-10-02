@@ -53,15 +53,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         />
         <div className="mt-4">
           {!hideTab && (
-            <div className="flex space-x-4">
+            <div className="flex md:space-x-4 space-x-2 ">
               {tabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`rounded-full border-2 px-5 py-2 text-sm font-medium ${
+                  className={`px-4 md:px-6 py-1 md:py-2 text-sm font-medium  border-2 rounded-full  ${
                     activeTab === tab
-                      ? "border-1 bg-primary text-white"
-                      : "text-black"
+                      ? " bg-primary  text-white"
+                      : "text-black font-normal"
                   }`}
                 >
                   {tab}

@@ -11,6 +11,8 @@ const config: Config = {
   theme: {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
+      manrope: ['Manrope', 'sans-serif'],
+
     },
     screens: {
       "2xsm": "375px",

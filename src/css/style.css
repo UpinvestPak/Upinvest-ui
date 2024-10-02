@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Exo:400,700");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
 
 @tailwind base;
 @tailwind components;
@@ -6,9 +9,10 @@
 
 @layer base {
     body {
-        @apply relative z-1 bg-white font-satoshi text-base font-normal text-body;
+        @apply relative z-1 bg-white   font-manrope text-base font-normal text-body;
     }
 }
+
 
 @layer components {
 }

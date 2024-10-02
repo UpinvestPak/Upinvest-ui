@@ -16,7 +16,7 @@ export default function TabView() {
 
 
   return (
-    <div className="max-w-full md:mx-3 mx-0">
+    <div className="max-w-full md:mx-3 mx-0.5">
       <div className="flex justify-between items-center">
         {/* Title */}
         <h1 className="text-2xl font-semibold text-black">My Watchlist</h1>

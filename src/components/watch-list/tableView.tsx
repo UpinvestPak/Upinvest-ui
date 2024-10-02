@@ -23,7 +23,7 @@ const MarketTable: React.FC = () => {
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
-        <div className="flex items-start text-start space-x-0 md:space-x-1.5 ">
+        <div className="flex items-start text-start space-x-1 md:space-x-1.5 ">
           <img
             src={record.icon}
             alt={record.name}
@@ -45,7 +45,7 @@ const MarketTable: React.FC = () => {
       dataIndex: 'buyPrice',
       key: 'buyPrice',
       sorter: (a, b) => a.buyPrice - b.buyPrice,
-      render: (text) => <p className="text-sm text-black md:text-base text-start">{text}</p>,
+      render: (text) => <p className="text-xs text-black md:text-base text-start">{text}</p>,
     },
     {
       title: 'Change',
@@ -68,7 +68,7 @@ const MarketTable: React.FC = () => {
       dataIndex: 'buyPrice',
       key: 'volume',
       sorter: (a, b) => a.buyPrice - b.buyPrice,
-      render: (text) => <p className="text-sm md:text-base text-black">{text}</p>,
+      render: (text) => <p className="text-xs md:text-base text-black">{text}</p>,
     },
     {
       title: '52W Range',
@@ -190,18 +190,7 @@ const markets: MarketData[] = [
     currentPrice: 0.15,
     changeDirection: "down",
   },
-  {
-    icon: "https://cryptologos.cc/logos/polkadot-dot-logo.png?v=025",
-    name: "DOT",
-    company: "Polkadot",
-    change: 0.5,
-    percentage: 1,
-    buyPrice: 20,
-    rangeLow: 10,
-    rangeHigh: 25,
-    currentPrice: 19,
-    changeDirection: "down",
-  },
+
   {
     icon: "https://cryptologos.cc/logos/solana-sol-logo.png?v=025",
     name: "SOL",
@@ -226,18 +215,7 @@ const markets: MarketData[] = [
     currentPrice: 1.25,
     changeDirection: "up",
   },
-  {
-    icon: "https://cryptologos.cc/logos/shiba-inu-shib-logo.png?v=025",
-    name: "SHIB",
-    company: "Shiba Inu",
-    change: 0.000005,
-    percentage: 1,
-    buyPrice: 0.000006,
-    rangeLow: 0.000002,
-    rangeHigh: 0.00001,
-    currentPrice: 0.000007,
-    changeDirection: "up",
-  },
+
   {
     icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=025",
     name: "ETH",
@@ -323,18 +301,7 @@ const markets: MarketData[] = [
     currentPrice: 0.15,
     changeDirection: "down",
   },
-  {
-    icon: "https://cryptologos.cc/logos/polkadot-dot-logo.png?v=025",
-    name: "DOT",
-    company: "Polkadot",
-    change: 0.5,
-    percentage: 1,
-    buyPrice: 20,
-    rangeLow: 10,
-    rangeHigh: 25,
-    currentPrice: 19,
-    changeDirection: "down",
-  },
+
   {
     icon: "https://cryptologos.cc/logos/solana-sol-logo.png?v=025",
     name: "SOL",
