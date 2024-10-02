@@ -37,15 +37,15 @@ export default function TabView() {
       </div>
 
       <div className="mt-6">
-        {!hideTab &&( <div className="flex space-x-2 md:space-x-4 ">
+        {!hideTab &&( <div className="flex space-x-2 md:space-x-4 font-medium ">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 md:px-6 py-1.5 md:py-2 text-sm font-medium  border-2 rounded-full  ${
+              className={`px-4 md:px-6 py-1 md:py-2 text-sm font-medium  border-2 rounded-full  ${
                 activeTab === tab
                   ? 'bg-primary border-2   text-white '
-                  : 'text-black'
+                  : 'text-black font-normal'
               }`}
             >
               {tab}
