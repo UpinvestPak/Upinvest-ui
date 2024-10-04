@@ -18,7 +18,7 @@ const Header = (props: {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
   return (
-    <header className="sticky top-0 z-40 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+    <header className="sticky top-0 z-50 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           {/* <!-- Hamburger Toggle BTN --> */}
@@ -64,11 +64,11 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 lg:hidden" href="/">
+          <Link className="block flex-shrink-0 -ml-4 lg:hidden" href="/">
             <Image
-              width={32}
-              height={32}
-              src={"/images/logo/logo-icon.svg"}
+              width={70}
+              height={70}
+              src={"/Upinvest logo JPG.jpg"}
               alt="Logo"
             />
           </Link>
@@ -81,28 +81,7 @@ const Header = (props: {
            
 
  
-        <button
-          className="flex items-center rounded-md border border-slate-300 px-4 py-2 text-center text-sm shadow-sm hover:border-[#387ED1] hover:bg-[#387ED1] hover:text-white hover:shadow-lg focus:border-[#387ED1] focus:bg-[#387ED1] focus:text-white active:border-[#387ED1] active:bg-[#387ED1] active:text-white disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none transition duration-300 ease-in"
-          type="button"
-          onClick={handleOpenModal}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-plus mr-2 h-4 w-4"
-          >
-            <path d="M5 12h14"></path>
-            <path d="M12 5v14"></path>
-          </svg>
-          Add Portfolio
-        </button>
+    
             </div> 
           </form>
         </div>

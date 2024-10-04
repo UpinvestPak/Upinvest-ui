@@ -59,7 +59,7 @@ const MarketTable: React.FC = () => {
           }`}
         >
           <p className="text-sx font-normal md:text-base">{record.change}</p>
-          <p className="text-xs font-medium ">{`[${record.percentage}%]`}</p>
+          <p className="text-xs font-medium ">{`${record.percentage}%`}</p>
         </div>
       ),
     },
@@ -184,7 +184,7 @@ const markets: MarketData[] = [
     company: "Dogecoin",
     change: -0.01,
     percentage: -0.5,
-    buyPrice: 0.2,
+    buyPrice: 2,
     rangeLow: 0.1,
     rangeHigh: 0.3,
     currentPrice: 0.15,
@@ -207,9 +207,9 @@ const markets: MarketData[] = [
     icon: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
     name: "MATIC",
     company: "Polygon",
-    change: 0.25,
+    change: 25,
     percentage: 1,
-    buyPrice: 1.5,
+    buyPrice: 15,
     rangeLow: 0.5,
     rangeHigh: 2,
     currentPrice: 1.25,
@@ -326,18 +326,7 @@ const markets: MarketData[] = [
     currentPrice: 1.25,
     changeDirection: "up",
   },
-  {
-    icon: "https://cryptologos.cc/logos/shiba-inu-shib-logo.png?v=025",
-    name: "SHIB",
-    company: "Shiba Inu",
-    change: 0.000005,
-    percentage: 1,
-    buyPrice: 0.000006,
-    rangeLow: 0.000002,
-    rangeHigh: 0.00001,
-    currentPrice: 0.000007,
-    changeDirection: "up",
-  },
+
   {
     icon: "https://cryptologos.cc/logos/chainlink-link-logo.png?v=025",
     name: "LINK",

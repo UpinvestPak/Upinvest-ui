@@ -22,7 +22,7 @@ export default function TabView() {
         <h1 className="text-2xl font-semibold text-black">My Watchlist</h1>
 
         {/* Icons */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-3">
           <button className="p-2 hover:bg-gray-100 rounded-full" onClick={()=>setIsModalOpen(true)}>
             <FiPlus className="text-xl"
              />
@@ -30,9 +30,7 @@ export default function TabView() {
           <button className="p-2 hover:bg-gray-100 rounded-full"  onClick={()=>setHideTab(!hideTab)}  >
             <FiFilter className="text-xl text-green-500" />
           </button>
-          <button className="p-2 hover:bg-gray-100 rounded-full">
-            <FiGrid className="text-xl" />
-          </button>
+        
         </div>
       </div>
 

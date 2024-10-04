@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
+import Modal from "@/utils/modalPorfilio";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -14,6 +15,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
   let storedSidebarExpanded = "true";
@@ -54,16 +57,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen); // Toggles the dropdown open/close state
   };
-
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
   return (
     <aside
       ref={sidebar}
-      className={`w-${sidebarExpanded ? "50" : "20"}  absolute left-0 top-0  flex h-screen flex-col overflow-y-hidden bg-[#ffffff] duration-300 ease-linear  lg:static lg:translate-x-0 ${
+      className={`w-${sidebarExpanded ? "50" : "20"}  absolute left-0 top-0  z-50 flex h-screen flex-col  bg-[#ffffff] duration-300 ease-linear  lg:static lg:translate-x-0 ${
         sidebarOpen
           ? "translate-x-0"
           : "-translate-x-full  border-r-2 border-r-primary"
       }`}
-      style={{ overflow: "visible" }}
     >
       {/* SIDEBAR HEADER */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5 ">
@@ -71,7 +74,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <Image
             width={146}
             height={32}
-            src={"/images/logo/logo.svg"}
+            src={"/Upinvest logos.png"}
             alt="Logo"
             priority
             className={`${!sidebarExpanded ? "hidden" : "block"}`} // Hide logo when sidebar is collapsed
@@ -101,9 +104,28 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         </button>
       </div>
 
-      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear   ">
-        <div className="relative mt-10 flex items-end justify-end">
-        
+      <div className="no-scrollbar flex flex-col duration-300 ease-linear   ">
+        <div className="relative mt-13 flex items-end justify-end">
+          <button
+            onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            className="absolute right-[-20px] top-1/2 z-50 h-10 w-10 -translate-y-1/2 transform rounded-full border-2 border-primary bg-primary hidden md:flex"
+            style={{ overflow: "visible" }} // Ensure overflow is visible for the button
+          >
+            <svg
+              className={`transform transition-transform ${sidebarExpanded ? "rotate-180" : ""}`} // Flip the arrow horizontally when expanded
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="white"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7" // Left to right arrow path
+              />
+            </svg>
+          </button>
         </div>
 
         <nav className="mt-5 px-2 py-4 lg:mt-9 lg:px-2">
@@ -114,12 +136,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   href="/"
                   onClick={toggleDropdown}
                   className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium text-bodydark1 duration-300 ease-in-out  ${
-                    pathname.includes("/") &&
-                    "w-full "
+                    pathname.includes("/") && "w-full "
                   }`}
                 >
                   <svg
-                    className="transform fill-current transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110 text-black"
+                    className="transform fill-current text-black transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110"
                     width="30"
                     height="30"
                     viewBox="0 0 18 18"
@@ -144,23 +165,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     />
                   </svg>
 
-                  {sidebarExpanded && <span className="text-black">DashBoard</span>}
+                  {sidebarExpanded && (
+                    <span className="text-black">DashBoard</span>
+                  )}
                 </Link>
               </li>
               <SidebarLinkGroup
-                activeCondition={
-                  pathname === "#" || pathname.includes("/port")
-                }
+                activeCondition={pathname === "#" || pathname.includes("/port")}
               >
                 {(handleClick, open) => {
                   return (
                     <React.Fragment>
                       <Link
                         href="#"
-                        className={`group relative flex items-center gap-2 rounded-sm  py-2 font-medium  duration-300 ease-in-out text-black  ${
-                          (pathname === "/" ||
-                            pathname.includes("")) &&
-                          ""
+                        className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium text-black duration-300 ease-in-out ${
+                          (pathname === "/" || pathname.includes("")) && ""
                         }`}
                         onClick={(e) => {
                           e.preventDefault();
@@ -185,50 +204,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <path d="M3 6h18"></path>
                           <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
-                        {sidebarExpanded && <span>My Portfolios</span>}
-                        <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-                            open && "rotate-180"
-                          }`}
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
-                            fill=""
-                          />
-                        </svg>
+                        {sidebarExpanded && <span>My Portfolio</span>}
                       </Link>
-                      <div
-                        className={`translate transform overflow-hidden ${
-                          !open && "hidden"
-                        }`}
-                      >
-                        <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          <li>
-                            <Link
-                              href="/portfolio"
-                              className={`tex-white group relative flex items-center gap-2 rounded-md px-2 font-medium duration-300 ease-in-out hover:text-white ${
-                                pathname === "/portfolio" && "text-white"
-                              }`}
-                            >
-                              Hamza
-                              <span
-                                className={`-top-0.5 z-1  flex h-2 w-2 rounded-full bg-green-400 ${
-                                  notifying === false ? "hidden" : "inline"
-                                }`}
-                              >
-                                <span className=" -z-1 inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                              </span>
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
                     </React.Fragment>
                   );
                 }}
@@ -239,10 +216,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   href="/watch-list"
                   onClick={toggleDropdown} // Toggles the dropdown when clicked
                   className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium 
-                       duration-300 ease-in-out text-black ${
-                    pathname.includes("watch-list") &&
-                    "w-full  "
-                  }`}
+                       text-black duration-300 ease-in-out ${
+                         pathname.includes("watch-list") && "w-full  "
+                       }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -258,12 +234,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   >
                     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
                   </svg>
-                  {sidebarExpanded && <span className="text-black">Watch List</span>}
+                  {sidebarExpanded && (
+                    <span className="text-black">Watch List</span>
+                  )}
                 </Link>
               </li>
             </ul>
           </div>
         </nav>
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </aside>
   );
