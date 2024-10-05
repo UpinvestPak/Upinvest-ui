@@ -239,6 +239,64 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   )}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/indeces"
+                  onClick={toggleDropdown} // Toggles the dropdown when clicked
+                  className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium 
+                       text-black duration-300 ease-in-out ${
+                         pathname.includes("indeces") && "w-full  "
+                       }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="29"
+                    height="29"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    className="lucide lucide-bookmark bg-white "
+                  >
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                  </svg>
+                  {sidebarExpanded && (
+                    <span className="text-black">Indices 
+
+                    </span>
+                  )}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/market"
+                  onClick={toggleDropdown} // Toggles the dropdown when clicked
+                  className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium 
+                       text-black duration-300 ease-in-out ${
+                         pathname.includes("market") && "w-full  "
+                       }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="29"
+                    height="29"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    className="lucide lucide-bookmark bg-white "
+                  >
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                  </svg>
+                  {sidebarExpanded && (
+                    <span className="text-black">Market</span>
+                  )}
+                </Link>
+              </li>
             </ul>
           </div>
         </nav>

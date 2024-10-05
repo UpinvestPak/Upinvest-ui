@@ -27,7 +27,7 @@ function BottomNavBar() {
           </Link>
 
           {/* Market Button */}
-          <Link href="auth/coming-soon" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+          <Link href="/market" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
             <img
               width={30}
               height={30}
@@ -60,7 +60,7 @@ function BottomNavBar() {
           </Link>
 
           {/* Stocks Button */}
-          <Link href="auth/coming-soon" className="inline-flex flex-col items-center justify-center px-5 rounded-e-full hover:bg-gray-50 dark:hover:bg-gray-800 group">
+          <Link href="/indeces" className="inline-flex flex-col items-center justify-center px-5 rounded-e-full hover:bg-gray-50 dark:hover:bg-gray-800 group">
             <img
               width={38}
               height={38}
