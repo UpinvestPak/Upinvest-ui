@@ -108,7 +108,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <div className="relative mt-13 flex items-end justify-end">
           <button
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
-            className="absolute right-[-20px] top-1/2 z-50 h-10 w-10 -translate-y-1/2 transform rounded-full border-2 border-primary bg-primary hidden md:flex"
+            className="absolute right-[-20px] top-1/2 z-50 hidden h-10 w-10 -translate-y-1/2 transform rounded-full border-2 border-primary bg-primary md:flex"
             style={{ overflow: "visible" }} // Ensure overflow is visible for the button
           >
             <svg
@@ -241,59 +241,41 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </li>
               <li>
                 <Link
-                  href="/indeces"
+                  href="/market"
                   onClick={toggleDropdown} // Toggles the dropdown when clicked
                   className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium 
                        text-black duration-300 ease-in-out ${
                          pathname.includes("indeces") && "w-full  "
                        }`}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="29"
-                    height="29"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    className="lucide lucide-bookmark bg-white "
-                  >
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-                  </svg>
+                  <Image
+              width={28}
+              height={28}
+              src="https://img.icons8.com/ios/50/combo-chart--v1.png"
+              alt="combo-chart--v1"
+            />
                   {sidebarExpanded && (
-                    <span className="text-black">Indices 
-
-                    </span>
+                    <span className="text-black">Market</span>
                   )}
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/market"
+                  href="/indeces"
                   onClick={toggleDropdown} // Toggles the dropdown when clicked
                   className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium 
                        text-black duration-300 ease-in-out ${
                          pathname.includes("market") && "w-full  "
                        }`}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="29"
-                    height="29"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    className="lucide lucide-bookmark bg-white "
-                  >
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-                  </svg>
+                <Image
+              width="28"
+              height="28"
+              src="https://img.icons8.com/ios/50/overview-pages-4.png"
+              alt="overview-pages-4"
+            />
                   {sidebarExpanded && (
-                    <span className="text-black">Market</span>
+                    <span className="text-black">indeces</span>
                   )}
                 </Link>
               </li>

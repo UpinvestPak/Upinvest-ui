@@ -10,13 +10,13 @@ export default function DefaultLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
   return (
     <>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}  />
-        
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         {/* <!-- ===== Sidebar End ===== --> */}
 
         {/* <!-- ===== Content Area Start ===== --> */}
@@ -24,15 +24,19 @@ export default function DefaultLayout({
           {/* <!-- ===== Header Start ===== --> */}
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           {/* <!-- ===== Header End ===== --> */}
-         
+
           {/* <!-- ===== Main Content Start ===== --> */}
-          <BottomNavBar/>
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-1 md:p-2 2xl:p-4 z-0">
+          <main className="relative z-0 flex-1">
+            <div className="mx-auto max-w-screen-2xl p-1 md:p-2 2xl:p-4">
               {children}
             </div>
           </main>
-          {/* <!-- ===== Main Content End ===== --> */}
+          {/* Add padding to the bottom of the main content */}
+          <div className="pb-18"></div>
+
+          {/* <!-- ===== BottomNavBar Start ===== --> */}
+          <BottomNavBar />
+          {/* <!-- ===== BottomNavBar End ===== --> */}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}
       </div>

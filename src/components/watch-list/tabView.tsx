@@ -2,8 +2,9 @@
 "use client"
 import { useState } from 'react';
 import { FiPlus, FiFilter, FiGrid } from 'react-icons/fi';
-import MarketTable from './tableView';
+import MarketTable from './watchTable';
 import Modal from './Model';
+import WatchListTable from './watchTable';
 
 
 export default function TabView() {
@@ -54,7 +55,7 @@ export default function TabView() {
        
       </div>
    
-      <MarketTable/>
+      <WatchListTable/>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> 
 
     </div>

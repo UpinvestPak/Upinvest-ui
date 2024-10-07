@@ -6,8 +6,7 @@ import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 import Modal from "@/utils/modalPorfilio";
 import { useState } from "react";
-import { Transition } from '@headlessui/react'
-
+import { Transition } from "@headlessui/react";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -64,7 +63,7 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 -ml-4 lg:hidden" href="/">
+          <Link className="-ml-4 block flex-shrink-0 lg:hidden" href="/">
             <Image
               width={70}
               height={70}
@@ -78,25 +77,17 @@ const Header = (props: {
           <form action="https://formbold.com/s/unique_form_id" method="POST">
             <div className="relative">
               <button className="absolute left-0 top-1/2 -translate-y-1/2"></button>
-           
-
- 
-    
-            </div> 
+            </div>
           </form>
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">
-
             <DropdownNotification />
-
-            <DropdownMessage />
           </ul>
 
           <DropdownUser />
           <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
         </div>
       </div>
     </header>
