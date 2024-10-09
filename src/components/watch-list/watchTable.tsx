@@ -160,33 +160,38 @@ const WatchListTable: React.FC = () => {
 
   return (
     
-    <>
-    <div className="flex md:space-x-4 bg-[#f1f5f9] p-1 md:p-2 rounded-md mt-4 space-x-2 ">
+    <div className="relative">
+    {/* Sticky Filters */}
+    <div className="bg-[#f1f5f9] p-1 md:p-2 rounded-md mt-4 space-x-2 sticky top-0 z-10">
       {options.map((option) => (
         <button
           key={option}
           onClick={() => setSelected(option)}
-          className={`px-2 py-1  text-sm font-medium   rounded-md  ${
-            selected === option
-              ? "bg-primary text-white"
-              : "text-black font-normal  "
+          className={`px-2 py-1 text-sm font-medium rounded-md ${
+            selected === option ? "bg-primary text-white" : "text-black font-normal"
           }`}
         >
           {option}
         </button>
       ))}
     </div>
-
-    <div className="mt-2 w-full rounded-md bg-white ">
+  
+    {/* Table Container with Sticky Header */}
+    <div className="mt-2 w-full rounded-md bg-white sticky ">
       <Table
         columns={columns}
         dataSource={markets}
         pagination={false}
         rowKey="name"
         className="custom-table w-full table-fixed"
+        scroll={{ y: 400 }} 
+
       />
     </div>
-    </>
+
+  </div>
+
+  
   );
 };
 
