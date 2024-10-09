@@ -115,13 +115,13 @@ const MovingAverageChart: React.FC = () => {
   return (
     <div>
       <div className="flex space-x-4 mb-4">
-        <button onClick={() => filterDataByRange('1m')} className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button onClick={() => filterDataByRange('1m')} className="px-4 py-2 bg-white text-black rounded">
           1 Month
         </button>
-        <button onClick={() => filterDataByRange('1y')} className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button onClick={() => filterDataByRange('1y')} className="px-4 py-2 bg-white text-black rounded">
           1 Year
         </button>
-        <button onClick={() => filterDataByRange('5y')} className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button onClick={() => filterDataByRange('5y')} className="px-4 py-2 bg-white text-black rounded">
           5 Years
         </button>
       </div>
