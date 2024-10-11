@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import useMedia from 'use-media';
+
 
 interface MarketData {
   icon: string;
@@ -19,14 +21,18 @@ interface MarketData {
 
 
 const WatchListTable: React.FC = () => {
+  const isLargeScreen = useMedia({ minWidth: 1024 }); // lg screen
+
   const columns: ColumnsType<MarketData> = [
     {
       title: 'Market',
       dataIndex: 'name',
       key: 'name',
+      // Dynamically set width based on screen size
+      width: isLargeScreen ? 170 : 118,
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
-        <div className="flex items-start text-start space-x-1 md:space-x-1.5 ">
+        <div className="flex items-start text-start space-x-1 md:-ml-2">
           <img
             src={record.icon}
             alt={record.name}
@@ -36,13 +42,17 @@ const WatchListTable: React.FC = () => {
             <p className="text-xs font-medium leading-tight text-black md:text-base">
               {record.name}
             </p>
-            <p className="text-[10px] leading-tight text-gray-500 md:text-xs md:-mt-1">
-              {record.company}
+            <p className="text-[10px] whitespace-break-spaces leading-tight text-gray-500 md:text-xs md:-mt-1">
+              <span className="">
+                {record.company}
+              </span>
             </p>
           </div>
         </div>
       ),
     },
+    
+    
     {
       title: 'Price',
       dataIndex: 'buyPrice',
@@ -85,7 +95,7 @@ const WatchListTable: React.FC = () => {
       responsive: ['md'], // Hidden in mobile view, show on larger screens
       sorter: (a, b) => a.oneYearChange - b.oneYearChange,
       render: (text, record) => (
-        <p className={`text-sm md:text-base -ml-3 ${record.oneYearChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+        <p className={`text-sm md:text-base  ${record.oneYearChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
           {text}%
         </p>
       ),
@@ -94,12 +104,21 @@ const WatchListTable: React.FC = () => {
       title: 'Volume',
       dataIndex: 'buyPrice',
       key: 'volume',
+
+
       sorter: (a, b) => a.buyPrice - b.buyPrice,
-      render: (text) => <p className="text-xs md:text-base -ml-5 text-black">{text}</p>,
+      render: (text) => (
+        <p className="text-xs md:text-base text-black">{text}</p>
+      ),
+      // Use Tailwind classes to handle responsive widths
+      className: "w-[10px] lg:w-[150px]", // Smaller width for mobile and larger for large screens
     },
+    
     {
       title: '52W Range',
       key: 'range',
+      width: 160, // Minimal width for the three-dot button
+
       responsive: ['md'], // Show on larger screens
       render: (text, record) => (
         <div className="relative py-3 text-left">
@@ -140,6 +159,8 @@ const WatchListTable: React.FC = () => {
       title: 'High',
       dataIndex: 'rangeHigh',
       key: 'high',
+      width:50,
+
       responsive: ['xs'], // Show on smaller screens
       render: (text) => <span className="text-xs ">{text}</span>,
       sorter: (a, b) => a.buyPrice - b.buyPrice,
@@ -148,10 +169,13 @@ const WatchListTable: React.FC = () => {
       title: 'Low',
       dataIndex: 'rangeLow',
       key: 'low',
+      width:46,
+
       responsive: ['xs'], // Show on smaller screens
       render: (text) => <span className="text-xs ">{text}</span>,
       sorter: (a, b) => a.buyPrice - b.buyPrice,
     },
+
   ];
   
   const [selected, setSelected] = useState("1D");
@@ -161,35 +185,33 @@ const WatchListTable: React.FC = () => {
   return (
     
     <div className="relative">
-    {/* Sticky Filters */}
-    <div className="bg-[#f1f5f9] p-1 md:p-2 rounded-md mt-4 space-x-2 sticky top-0 z-10">
-      {options.map((option) => (
-        <button
-          key={option}
-          onClick={() => setSelected(option)}
-          className={`px-2 py-1 text-sm font-medium rounded-md ${
-            selected === option ? "bg-primary text-white" : "text-black font-normal"
-          }`}
-        >
-          {option}
-        </button>
-      ))}
-    </div>
-  
-    {/* Table Container with Sticky Header */}
-    <div className="mt-2 w-full rounded-md bg-white sticky ">
-      <Table
-        columns={columns}
-        dataSource={markets}
-        pagination={false}
-        rowKey="name"
-        className="custom-table w-full table-fixed"
-        scroll={{ y: 400 }} 
+      {/* Sticky Filters */}
+      <div className="bg-[#f1f5f9] p-1 md:p- rounded-md mt-4 space-x-2 sticky top-0 z-10">
+        {options.map((option) => (
+          <button
+            key={option}
+            onClick={() => setSelected(option)}
+            className={`px-2 py-1 text-sm font-medium rounded-md ${
+              selected === option ? "bg-primary text-white" : "text-black font-normal"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
 
-      />
+      {/* Table Container with Sticky Header */}
+      <div className="mt-2 w-full rounded-md bg-white overflow-auto no-scrollbar">
+        <Table
+          columns={columns}
+          dataSource={markets}
+          pagination={false}
+          rowKey="name"
+          className="custom-table w-full table-fixed no-scrollbar"
+          scroll={{ y: 400 }} // Ensure vertical scrolling works
+        />
+      </div>
     </div>
-
-  </div>
 
   
   );

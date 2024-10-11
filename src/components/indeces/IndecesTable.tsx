@@ -44,27 +44,29 @@ const IndecesTable: React.FC = () => {
       <div className="mt-6">
         {/* Scrollable Tab List */}
         <div
-          className="hide-scrollbar  z-0 flex space-x-2 overflow-x-auto   border-b-4 border-[#d8d8d8] font-medium md:space-x-2"
-          style={{ scrollBehavior: "smooth" }}
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`relative px-4  py-2 text-sm transition-colors duration-300 md:px-6 md:py-3 ${
-                activeTab === tab
-                  ? "border-b-2 pb-2  border-primary text-primary" // Selected tab: primary color underline and text
-                  : " border-[#d8d8d8] text-black hover:border-gray-300" // Default tab: transparent underline with hover effect
-              }`}
-            >
-              {tab}
-              {/* Highlight active tab */}
-              {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary" />
-              )}
-            </button>
-          ))}
-        </div>
+  className="hide-scrollbar flex space-x-2 overflow-x-auto border-b-4 border-[#d8d8d8] font-medium md:space-x-2 relative"
+  style={{ scrollBehavior: "smooth" }}
+>
+  {tabs.map((tab) => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`relative z-10 px-4 py-2 text-sm transition-colors duration-300 md:px-6 md:py-3 ${
+        activeTab === tab
+          ? "text-primary z-20" // Ensure active tab has higher z-index
+          : "text-black hover:border-gray-300"
+      }`}
+    >
+      {tab}
+      {/* Highlight active tab */}
+      {activeTab === tab && (
+        <div className="absolute bottom-0 left-0 right-0 h-[4px] bg-primary z-10" />
+      )}
+    </button>
+  ))}
+</div>
+
+
       </div>
       <div className=" mt-8 md:flex-row space-x-10 rounded-lg p-3 shadow-lg  relative  flex-col justify-center items-center  flex">
         <div className="md:w-[40%]   rounded-lg  w-full  ">
