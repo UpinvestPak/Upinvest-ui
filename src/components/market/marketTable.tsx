@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Table } from "antd";
+import { Table, Modal, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { FiMoreVertical } from "react-icons/fi";
 import useMedia from "use-media";
@@ -21,6 +21,8 @@ interface MarketData {
 }
 
 const MarketTable: React.FC = () => {
+
+
   const isLargeScreen = useMedia({ minWidth: 1024 }); // lg screen
 
   const columns: ColumnsType<MarketData> = [
@@ -190,6 +192,8 @@ const MarketTable: React.FC = () => {
           <button
             className="text-gray-400 hover:text-black"
             aria-label="More options"
+            onClick={(e) => showModal(e)}
+
           >
             <FiMoreVertical size={20} />
           </button>
@@ -198,12 +202,38 @@ const MarketTable: React.FC = () => {
     },
   ];
 
+
   const [selected, setSelected] = useState("1D");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+
+  const showModal = (e:any) => {
+    const rect = e.target.getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+    const modalWidth = 480; // Approximate width of the modal
+
+    // Check if the modal would go off-screen and adjust its position
+    const adjustedLeft = rect.left + modalWidth > screenWidth
+      ? screenWidth - modalWidth - 70 // Subtract to make it fit the screen with padding
+      : rect.left;
+
+    setModalPosition({
+      top: rect.top,
+      left: adjustedLeft,
+    });
+
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   const options = ["1D", "7D", "1M", "6M", "1Y", "3Y", "5Y"];
 
   return (
     <div className="relative md:mx-3">
-      <div className="ml-3 flex items-center justify-between">
+      <div className=" flex items-center justify-between">
         {/* Title */}
         <h1 className="text-2xl font-semibold text-black">Market Overview</h1>
       </div>
@@ -235,6 +265,24 @@ const MarketTable: React.FC = () => {
           scroll={{ y: 400 }}
         />
       </div>
+      <Modal
+        title="Add to Watch List"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        style={{
+          position: "absolute",
+          top: modalPosition.top + 20, // Adjust for positioning above the button
+          left: modalPosition.left,
+        }}
+        mask={false} // To prevent full-screen background overlay
+        maskClosable={true}
+      >
+        <p>Would you like to add this stock to your watchlist?</p>
+        <Button className="text-black border-2 border-primary bg-white" type="primary" onClick={handleCancel}>
+          Confirm
+        </Button>
+      </Modal>
     </div>
   );
 };

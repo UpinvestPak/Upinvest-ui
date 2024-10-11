@@ -36,7 +36,7 @@ const IndecesTable: React.FC = () => {
 
   return (
     <div className=" md:mx-3 ">
-      <div className="ml-3 flex items-center justify-between">
+      <div className=" flex items-center justify-between">
         {/* Title */}
         <h1 className="text-2xl font-semibold text-black">Indices Overview</h1>
       </div>
