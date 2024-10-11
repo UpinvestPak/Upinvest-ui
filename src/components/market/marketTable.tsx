@@ -1,11 +1,9 @@
-"use client"
-import React, { useState } from 'react';
-import { Table } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { FiMoreVertical } from 'react-icons/fi';
-import useMedia from 'use-media';
-
-
+"use client";
+import React, { useState } from "react";
+import { Table } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { FiMoreVertical } from "react-icons/fi";
+import useMedia from "use-media";
 
 interface MarketData {
   icon: string;
@@ -17,61 +15,61 @@ interface MarketData {
   rangeLow: number;
   rangeHigh: number;
   currentPrice: number;
-  changeDirection: 'up' | 'down';
+  changeDirection: "up" | "down";
   ytdChange: number; // Year-to-Date Change percentage
   oneYearChange: number; // 1-Year Change percentage
 }
-
 
 const MarketTable: React.FC = () => {
   const isLargeScreen = useMedia({ minWidth: 1024 }); // lg screen
 
   const columns: ColumnsType<MarketData> = [
     {
-      title: 'Market',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Market",
+      dataIndex: "name",
+      key: "name",
       // Dynamically set width based on screen size
       width: isLargeScreen ? 170 : 118,
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
-        <div className="flex items-start text-start space-x-1 md:-ml-2">
+        <div className="flex items-start space-x-1 text-start md:-ml-2">
           <img
             src={record.icon}
             alt={record.name}
-            className="h-8 w-7 rounded-full md:w-9 md:h-10"
+            className="h-8 w-7 rounded-full md:h-10 md:w-9"
           />
           <div className="flex flex-col">
             <p className="text-xs font-medium leading-tight text-black md:text-base">
               {record.name}
             </p>
-            <p className="text-[10px] whitespace-break-spaces leading-tight text-gray-500 md:text-xs md:-mt-1">
-              <span className="">
-                {record.company}
-              </span>
+            <p className="whitespace-break-spaces text-[10px] leading-tight text-gray-500 md:-mt-1 md:text-xs">
+              <span className="">{record.company}</span>
             </p>
           </div>
         </div>
       ),
     },
-    
-    
+
     {
-      title: 'Price',
-      dataIndex: 'buyPrice',
-      key: 'buyPrice',
+      title: "Price",
+      dataIndex: "buyPrice",
+      key: "buyPrice",
       sorter: (a, b) => a.buyPrice - b.buyPrice,
-      render: (text) => <p className="text-xs text-black md:text-base text-start ">{text} <span className='text-xs -ml-0.5'>Pkr</span></p>,
+      render: (text) => (
+        <p className="text-start text-xs text-black md:text-base ">
+          {text} <span className="-ml-0.5 text-xs">Pkr</span>
+        </p>
+      ),
     },
     {
-      title: 'Change',
-      dataIndex: 'change',
-      key: 'change',
+      title: "Change",
+      dataIndex: "change",
+      key: "change",
       sorter: (a, b) => a.change - b.change,
       render: (text, record) => (
         <div
           className={`text-left text-sm md:text-base ${
-            record.changeDirection === 'up' ? 'text-green-500' : 'text-red-500'
+            record.changeDirection === "up" ? "text-green-500" : "text-red-500"
           }`}
         >
           <p className="text-sx font-normal md:text-base">{record.change}</p>
@@ -80,49 +78,52 @@ const MarketTable: React.FC = () => {
       ),
     },
     {
-      title: 'YTD Change',
-      dataIndex: 'ytdChange',
-      key: 'ytdChange',
-      responsive: ['md'], // Hidden in mobile view, show on larger screens
+      title: "YTD Change",
+      dataIndex: "ytdChange",
+      key: "ytdChange",
+      responsive: ["md"], // Hidden in mobile view, show on larger screens
       sorter: (a, b) => a.ytdChange - b.ytdChange,
       render: (text, record) => (
-        <p className={`text-sm md:text-base ${record.ytdChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+        <p
+          className={`text-sm md:text-base ${record.ytdChange >= 0 ? "text-green-500" : "text-red-500"}`}
+        >
           {text}%
         </p>
       ),
     },
     {
-      title: '1-Year Change',
-      dataIndex: 'oneYearChange',
-      key: 'oneYearChange',
-      responsive: ['md'], // Hidden in mobile view, show on larger screens
+      title: "1-Year Change",
+      dataIndex: "oneYearChange",
+      key: "oneYearChange",
+      responsive: ["md"], // Hidden in mobile view, show on larger screens
       sorter: (a, b) => a.oneYearChange - b.oneYearChange,
       render: (text, record) => (
-        <p className={`text-sm md:text-base  ${record.oneYearChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+        <p
+          className={`text-sm md:text-base  ${record.oneYearChange >= 0 ? "text-green-500" : "text-red-500"}`}
+        >
           {text}%
         </p>
       ),
     },
     {
-      title: 'Volume',
-      dataIndex: 'buyPrice',
-      key: 'volume',
-
+      title: "Volume",
+      dataIndex: "buyPrice",
+      key: "volume",
 
       sorter: (a, b) => a.buyPrice - b.buyPrice,
       render: (text) => (
-        <p className="text-xs md:text-base text-black">{text}</p>
+        <p className="text-xs text-black md:text-base">{text}</p>
       ),
       // Use Tailwind classes to handle responsive widths
       className: "w-[10px] lg:w-[150px]", // Smaller width for mobile and larger for large screens
     },
-    
+
     {
-      title: '52W Range',
-      key: 'range',
+      title: "52W Range",
+      key: "range",
       width: 160, // Minimal width for the three-dot button
 
-      responsive: ['md'], // Show on larger screens
+      responsive: ["md"], // Show on larger screens
       render: (text, record) => (
         <div className="relative py-3 text-left">
           <span className="absolute left-0 top-0.5 text-xs font-medium">
@@ -157,33 +158,32 @@ const MarketTable: React.FC = () => {
         </div>
       ),
     },
-  
-    {
-      title: 'High',
-      dataIndex: 'rangeHigh',
-      key: 'high',
-      width:50,
 
-      responsive: ['xs'], // Show on smaller screens
+    {
+      title: "High",
+      dataIndex: "rangeHigh",
+      key: "high",
+      width: 50,
+
+      responsive: ["xs"], // Show on smaller screens
       render: (text) => <span className="text-xs ">{text}</span>,
       sorter: (a, b) => a.buyPrice - b.buyPrice,
     },
     {
-      title: 'Low',
-      dataIndex: 'rangeLow',
-      key: 'low',
-      width:46,
+      title: "Low",
+      dataIndex: "rangeLow",
+      key: "low",
+      width: 46,
 
-      responsive: ['xs'], // Show on smaller screens
+      responsive: ["xs"], // Show on smaller screens
       render: (text) => <span className="text-xs ">{text}</span>,
       sorter: (a, b) => a.buyPrice - b.buyPrice,
     },
     {
-      title: '',
-      key: 'action',
-      width: 30, 
-      responsive: ['md'], 
-
+      title: "",
+      key: "action",
+      width: 30,
+      responsive: ["md"],
 
       render: (_, record) => (
         <div className="flex justify-end">
@@ -197,43 +197,45 @@ const MarketTable: React.FC = () => {
       ),
     },
   ];
-  
-  const [selected, setSelected] = useState("1D");
-  const options = ["1D", "7D", "1M", "6M", "1Y","3Y", "5Y"];
 
+  const [selected, setSelected] = useState("1D");
+  const options = ["1D", "7D", "1M", "6M", "1Y", "3Y", "5Y"];
 
   return (
-    
     <div className="relative md:mx-3">
-    {/* Sticky Filters */}
-    <div className="bg-[#f1f5f9] p-1 md:p-2 rounded-md mt-4 space-x-2 sticky top-0 z-10">
-      {options.map((option) => (
-        <button
-          key={option}
-          onClick={() => setSelected(option)}
-          className={`px-2 py-1 text-sm font-medium rounded-md ${
-            selected === option ? "bg-primary text-white" : "text-black font-normal"
-          }`}
-        >
-          {option}
-        </button>
-      ))}
-    </div>
+      <div className="ml-3 flex items-center justify-between">
+        {/* Title */}
+        <h1 className="text-2xl font-semibold text-black">Market Overview</h1>
+      </div>
+      {/* Sticky Filters */}
+      <div className="sticky top-0 z-10 mt-4 space-x-2 rounded-md bg-[#f1f5f9] p-1 md:p-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            onClick={() => setSelected(option)}
+            className={`rounded-md px-2 py-1 text-sm font-medium ${
+              selected === option
+                ? "bg-primary text-white"
+                : "font-normal text-black"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
 
-    {/* Table Container with Sticky Header */}
-    <div className="mt-2 w-full rounded-md bg-white sticky overflow-auto no-scrollbar">
-      <Table
-        columns={columns}
-        dataSource={markets}
-        pagination={false}
-        rowKey="name"
-        className="custom-table w-full table-fixed overflow-auto no-scrollbar"
-        scroll={{ y: 400 }}
-      />
+      {/* Table Container with Sticky Header */}
+      <div className="no-scrollbar sticky mt-2 w-full overflow-auto rounded-md bg-white">
+        <Table
+          columns={columns}
+          dataSource={markets}
+          pagination={false}
+          rowKey="name"
+          className="custom-table no-scrollbar w-full table-fixed overflow-auto"
+          scroll={{ y: 400 }}
+        />
+      </div>
     </div>
-  </div>
-
-  
   );
 };
 
@@ -241,7 +243,7 @@ export default MarketTable;
 
 const markets: MarketData[] = [
   {
-    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png",
     name: "ENGRO",
     company: "Engro Corporation",
     change: 5,
@@ -255,7 +257,7 @@ const markets: MarketData[] = [
     oneYearChange: 15,
   },
   {
-    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png",
     name: "HBL",
     company: "Habib Bank Limited",
     change: -3,
@@ -269,7 +271,7 @@ const markets: MarketData[] = [
     oneYearChange: -10,
   },
   {
-    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png", 
+    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png",
     name: "LUCK",
     company: "Lucky Cement",
     change: 7,
@@ -283,7 +285,7 @@ const markets: MarketData[] = [
     oneYearChange: 20,
   },
   {
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/PTCL_Logo.svg/2048px-PTCL_Logo.svg.png", 
+    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/PTCL_Logo.svg/2048px-PTCL_Logo.svg.png",
     name: "PTCL",
     company: "Pakistan Telecommunication Company Limited",
     change: 0.5,
@@ -297,7 +299,7 @@ const markets: MarketData[] = [
     oneYearChange: 6,
   },
   {
-    icon: "https://upload.wikimedia.org/wikipedia/en/6/66/Oil_and_Gas_Development_Company_logo.png", 
+    icon: "https://upload.wikimedia.org/wikipedia/en/6/66/Oil_and_Gas_Development_Company_logo.png",
     name: "OGDC",
     company: "Oil & Gas Development Company",
     change: -2,
@@ -311,7 +313,7 @@ const markets: MarketData[] = [
     oneYearChange: -5,
   },
   {
-    icon: "https://upload.wikimedia.org/wikipedia/en/d/da/Fauji_Fertilizer_Company_Logo.png", 
+    icon: "https://upload.wikimedia.org/wikipedia/en/d/da/Fauji_Fertilizer_Company_Logo.png",
     name: "FFC",
     company: "Fauji Fertilizer Company",
     change: 3,
@@ -325,7 +327,7 @@ const markets: MarketData[] = [
     oneYearChange: 10,
   },
   {
-    icon: "https://seeklogo.com/images/U/unilever-logo-3B472C0E13-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/U/unilever-logo-3B472C0E13-seeklogo.com.png",
     name: "UNILEVER",
     company: "Unilever Pakistan",
     change: 4,
@@ -339,7 +341,7 @@ const markets: MarketData[] = [
     oneYearChange: 12,
   },
   {
-    icon: "https://upload.wikimedia.org/wikipedia/en/thumb/9/91/Pakistan_International_Airlines_Logo.svg/1024px-Pakistan_International_Airlines_Logo.svg.png", 
+    icon: "https://upload.wikimedia.org/wikipedia/en/thumb/9/91/Pakistan_International_Airlines_Logo.svg/1024px-Pakistan_International_Airlines_Logo.svg.png",
     name: "PIA",
     company: "Pakistan International Airlines",
     change: -0.3,
@@ -353,7 +355,7 @@ const markets: MarketData[] = [
     oneYearChange: -18,
   },
   {
-    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png",
     name: "ENGRO",
     company: "Engro Corporation",
     change: 5,
@@ -367,7 +369,7 @@ const markets: MarketData[] = [
     oneYearChange: 15,
   },
   {
-    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png",
     name: "HBL",
     company: "Habib Bank Limited",
     change: -3,
@@ -381,7 +383,7 @@ const markets: MarketData[] = [
     oneYearChange: -10,
   },
   {
-    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png", 
+    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png",
     name: "LUCK",
     company: "Lucky Cement",
     change: 7,
@@ -395,7 +397,7 @@ const markets: MarketData[] = [
     oneYearChange: 20,
   },
   {
-    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png",
     name: "ENGRO",
     company: "Engro Corporation",
     change: 5,
@@ -409,7 +411,7 @@ const markets: MarketData[] = [
     oneYearChange: 15,
   },
   {
-    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png", 
+    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png",
     name: "HBL",
     company: "Habib Bank Limited",
     change: -3,
@@ -423,7 +425,7 @@ const markets: MarketData[] = [
     oneYearChange: -10,
   },
   {
-    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png", 
+    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png",
     name: "LUCK",
     company: "Lucky Cement",
     change: 7,
@@ -437,5 +439,3 @@ const markets: MarketData[] = [
     oneYearChange: 20,
   },
 ];
-
-

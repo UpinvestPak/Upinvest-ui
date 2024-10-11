@@ -40,37 +40,35 @@ const IndecesTable: React.FC = () => {
         {/* Title */}
         <h1 className="text-2xl font-semibold text-black">Indices Overview</h1>
       </div>
- 
+
       <div className="mt-6">
         {/* Scrollable Tab List */}
         <div
-  className="hide-scrollbar flex space-x-2 overflow-x-auto border-b-4 border-[#d8d8d8] font-medium md:space-x-2 relative"
-  style={{ scrollBehavior: "smooth" }}
->
-  {tabs.map((tab) => (
-    <button
-      key={tab}
-      onClick={() => setActiveTab(tab)}
-      className={`relative z-10 px-4 py-2 text-sm transition-colors duration-300 md:px-6 md:py-3 ${
-        activeTab === tab
-          ? "text-primary z-20" // Ensure active tab has higher z-index
-          : "text-black hover:border-gray-300"
-      }`}
-    >
-      {tab}
-      {/* Highlight active tab */}
-      {activeTab === tab && (
-        <div className="absolute bottom-0 left-0 right-0 h-[4px] bg-primary z-10" />
-      )}
-    </button>
-  ))}
-</div>
-
-
+          className="hide-scrollbar relative flex space-x-2 overflow-x-auto border-b-4 border-[#d8d8d8] font-medium md:space-x-2"
+          style={{ scrollBehavior: "smooth" }}
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`relative z-10 px-4 py-2 text-sm transition-colors duration-300 md:px-6 md:py-3 ${
+                activeTab === tab
+                  ? "z-20 text-primary" // Ensure active tab has higher z-index
+                  : "text-black hover:border-gray-300"
+              }`}
+            >
+              {tab}
+              {/* Highlight active tab */}
+              {activeTab === tab && (
+                <div className="absolute bottom-0 left-0 right-0 z-10 h-[4px] bg-primary" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className=" mt-8 md:flex-row space-x-10 rounded-lg p-3 shadow-lg  relative  flex-col justify-center items-center  flex">
-        <div className="md:w-[40%]   rounded-lg  w-full  ">
-          <div className="flex items-center text-center mt-3">
+      <div className=" relative mt-8 flex flex-col items-center justify-center  space-x-10  rounded-lg p-3 shadow-lg  md:flex-row">
+        <div className="w-full   rounded-lg  md:w-[40%]  ">
+          <div className="mt-3 flex items-center text-center">
             <p className="text-2xl font-bold text-black">86,383.38</p>
             <p className="ml-3 flex items-center text-lg font-semibold text-green-500">
               <FontAwesomeIcon icon={faArrowUp} className="mr-1" />
@@ -146,10 +144,10 @@ const IndecesTable: React.FC = () => {
             <div className="text-black">
               <p className="text-sm font-medium  text-black">52-WEEK RANGE</p>
               <div className="relative py-5 text-left">
-                <span className="absolute text-black mt-2 left-0 top-0.5 text-xs font-medium">
+                <span className="absolute left-0 top-0.5 mt-2 text-xs font-medium text-black">
                   {record.rangeLow}
                 </span>
-                <span className="absolute mt-2 right-0 top-0.5 text-xs font-medium">
+                <span className="absolute right-0 top-0.5 mt-2 text-xs font-medium">
                   {record.rangeHigh}
                 </span>
                 <div className="relative mt-3 h-3 w-full rounded-full bg-[#f1f1f1]">
@@ -164,7 +162,7 @@ const IndecesTable: React.FC = () => {
                     }}
                   ></div>
                   <div
-                    className="absolute -ml-2 text-black -mt-0.5 h-4 w-4 cursor-pointer rounded-full border border-gray-300 bg-primary shadow"
+                    className="absolute -ml-2 -mt-0.5 h-4 w-4 cursor-pointer rounded-full border border-gray-300 bg-primary text-black shadow"
                     style={{
                       left: `${
                         ((record.currentPrice - record.rangeLow) /
@@ -183,11 +181,10 @@ const IndecesTable: React.FC = () => {
         </div>
 
         {/* Chart taking 60% */}
-        <div className="md:w-3/5 w-full pr-10 md:pr-0 py-4 md:py-0">
+        <div className="w-full py-4 pr-10 md:w-3/5 md:py-0 md:pr-0">
           <MovingAverageChart />
         </div>
       </div>
-   
     </div>
   );
 };
