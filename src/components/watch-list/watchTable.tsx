@@ -48,7 +48,7 @@ const WatchListTable: React.FC = () => {
       dataIndex: 'buyPrice',
       key: 'buyPrice',
       sorter: (a, b) => a.buyPrice - b.buyPrice,
-      render: (text) => <p className="text-xs text-black md:text-base text-start -ml-3">{text}Pkr</p>,
+      render: (text) => <p className="text-xs text-black md:text-base text-start ">{text} <span className='text-xs -ml-0.5'>Pkr</span></p>,
     },
     {
       title: 'Change',

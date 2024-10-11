@@ -1,131 +1,115 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as d3 from 'd3';
+import { useEffect, useRef } from 'react';
+import Highcharts from 'highcharts/highstock';
 
-// Generate volatile data with range between 100 and 130
-const generateVolatileData = (numPoints: number): StockData[] => {
-  const data: StockData[] = [];
-  let basePrice = 115; // Starting price
-
-  for (let i = 0; i < numPoints; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - numPoints + i);
-
-    // Randomly vary the price up or down
-    const priceChange = (Math.random() - 0.5) * 10;
-    basePrice += priceChange;
-
-    // Clamp the price between 100 and 130
-    basePrice = Math.max(100, Math.min(130, basePrice));
-
-    data.push({
-      date: new Date(date),
-      close: basePrice,
-    });
-  }
-
-  return data;
-};
-
-// Dummy data for the chart with rapid up and down changes
-const dummyData = generateVolatileData(500); // 500 data points
-
-interface StockData {
-  date: Date;
-  close: number;
-}
-
-const MovingAverageChart: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [data, setData] = useState<StockData[]>(dummyData);
+const MovingAverageChart = () => {
+  const chartContainerRef = useRef<HTMLDivElement | null>(null);
+  const chartRef = useRef<Highcharts.Chart | null>(null); // Ref for the Highcharts chart instance
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    const initChart = async () => {
+      // Fetch the stock data with proper typing
+      const data: number[][] = await fetch(
+        'https://demo-live-data.highcharts.com/aapl-c.json'
+      ).then((response) => response.json());
 
-    const width = 928;
-    const height = 500;
-    const marginTop = 20;
-    const marginRight = 30;
-    const marginBottom = 30;
-    const marginLeft = 40;
+      // Ensure the chart container is available
+      if (chartContainerRef.current) {
+        // Initialize the chart with the correct options
+        chartRef.current = Highcharts.stockChart({
+          chart: {
+            renderTo: chartContainerRef.current, // Correctly specify the renderTo property
+            height: 400,
+          },
 
-    const svg = d3.select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height)
-      .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('style', 'max-width: 100%; height: auto;');
+          rangeSelector: {
+            buttons: [
+              {
+                type: 'month',
+                count: 1,
+                text: '1m',
+              },
+              {
+                type: 'month',
+                count: 3,
+                text: '3m',
+              },
+              {
+                type: 'month',
+                count: 6,
+                text: '6m',
+              },
+              {
+                type: 'year',
+                count: 1,
+                text: '1y',
+              },
+              {
+                type: 'all',
+                text: 'All',
+              },
+            ],
+            selected: 1, // Default selected button (3 months)
+          },
 
-    // Clear previous chart
-    svg.selectAll('*').remove();
+          xAxis: {
+            type: 'datetime',
+            labels: {
+              format: '{value:%e %b}',
+            },
+          },
 
-    const x = d3.scaleUtc()
-      .domain(d3.extent(data, d => d.date) as [Date, Date])
-      .range([marginLeft, width - marginRight]);
+          series: [
+            {
+              name: 'AAPL Stock Price',
+              data: data,
+              type: 'area',
+              color: '#387ed1',
+              fillOpacity: 0.5,
+              threshold: null,
+              tooltip: {
+                valueDecimals: 2,
+              },
+            },
+          ],
 
-    const y = d3.scaleLinear()
-      .domain([100, 130]) // Set the Y axis range from 100 to 130
-      .range([height - marginBottom, marginTop]);
+          credits: {
+            enabled: false, // Remove Highcharts logo
+          },
 
-    const area = d3.area<StockData>()
-      .x(d => x(d.date))
-      .y0(y(100))
-      .y1(d => y(d.close));
+          responsive: {
+            rules: [
+              {
+                condition: {
+                  maxWidth: 500,
+                },
+                chartOptions: {
+                  chart: {
+                    height: 300,
+                  },
+              
+                  navigator: {
+                    enabled: false,
+                  },
+                },
+              },
+            ],
+          },
+        });
+      }
+    };
 
-    svg.append('path')
-      .datum(data)
-      .attr('fill', 'steelblue')
-      .attr('d', area);
+    initChart(); // Call the init function
 
-    svg.append('g')
-      .attr('transform', `translate(0,${height - marginBottom})`)
-      .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
-
-    svg.append('g')
-      .attr('transform', `translate(${marginLeft},0)`)
-      .call(d3.axisLeft(y).ticks(height / 40))
-      .call(g => g.select(".domain").remove())
-      .call(g => g.selectAll(".tick line").clone()
-        .attr('x2', width - marginLeft - marginRight)
-        .attr('stroke-opacity', 0.1));
-
-  }, [data]);
-
-  // Filter function for time ranges
-  const filterDataByRange = (range: string) => {
-    const now = new Date();
-    let startDate: Date;
-
-    switch (range) {
-      case '1m':
-        startDate = new Date(now.setMonth(now.getMonth() - 1));
-        break;
-      case '1y':
-        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-        break;
-      case '5y':
-        startDate = new Date(now.setFullYear(now.getFullYear() - 5));
-        break;
-      default:
-        startDate = new Date(0);
-    }
-
-    const filteredData = dummyData.filter(d => d.date >= startDate);
-    setData(filteredData);
-  };
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+      }
+    };
+  }, []);
 
   return (
-    <div>
-      <div className="flex space-x-4 mb-4">
-        <button onClick={() => filterDataByRange('1m')} className="px-4 py-2 bg-white text-black rounded">
-          1 Month
-        </button>
-        <button onClick={() => filterDataByRange('1y')} className="px-4 py-2 bg-white text-black rounded">
-          1 Year
-        </button>
-        <button onClick={() => filterDataByRange('5y')} className="px-4 py-2 bg-white text-black rounded">
-          5 Years
-        </button>
-      </div>
-      <svg ref={svgRef}></svg>
+    <div className="flex flex-col items-center">
+      <div ref={chartContainerRef} id="container" className="w-full h-[400px]" />
     </div>
   );
 };
