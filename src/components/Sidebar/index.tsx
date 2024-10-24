@@ -177,9 +177,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   return (
                     <React.Fragment>
                       <Link
-                        href="#"
+                        href="/portfolio"
                         className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium text-black duration-300 ease-in-out ${
-                          (pathname === "/" || pathname.includes("")) && ""
+                          (pathname === "/" || pathname.includes("/portfolio")) && ""
                         }`}
                         onClick={(e) => {
                           e.preventDefault();
