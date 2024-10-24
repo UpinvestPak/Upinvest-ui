@@ -29,7 +29,7 @@ export default function TabView() {
              />
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-full"  onClick={()=>setHideTab(!hideTab)}  >
-            <FiFilter className="text-xl text-green-500" />
+            <FiFilter className="text-xl text-primary" />
           </button>
         
         </div>
@@ -56,7 +56,8 @@ export default function TabView() {
       </div>
    
       <WatchListTable/>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> 
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}
+       /> 
 
     </div>
   );

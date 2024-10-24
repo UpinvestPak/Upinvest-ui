@@ -181,7 +181,7 @@ const IndecesTable: React.FC = () => {
         </div>
 
         {/* Chart taking 60% */}
-        <div className="w-full py-4 pr-10 md:w-3/5 md:py-0 md:pr-0">
+        <div className="w-[115%] py-4 pr-8 justify-center md:w-3/5 md:py-0 md:pr-0">
           <MovingAverageChart />
         </div>
       </div>

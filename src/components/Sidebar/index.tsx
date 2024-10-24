@@ -62,7 +62,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`w-${sidebarExpanded ? "50" : "20"}  absolute left-0 top-0  z-50 flex h-screen flex-col  bg-[#ffffff] duration-300 ease-linear  lg:static lg:translate-x-0 ${
+      className={`w-${sidebarExpanded ? "50" : "20"}  absolute left-0 top-0  z-40 flex h-screen flex-col  bg-[#ffffff] duration-300 ease-linear  lg:static lg:translate-x-0 ${
         sidebarOpen
           ? "translate-x-0"
           : "-translate-x-full  border-r-2 border-r-primary"
@@ -133,10 +133,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <ul className="mb-6 flex flex-col gap-6">
               <li>
                 <Link
-                  href="/"
+                  href="/portfolio"
                   onClick={toggleDropdown}
                   className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium text-bodydark1 duration-300 ease-in-out  ${
-                    pathname.includes("/") && "w-full "
+                    pathname.includes("/portfolio") && "w-full "
                   }`}
                 >
                   <svg
