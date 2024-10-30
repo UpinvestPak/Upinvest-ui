@@ -1,5 +1,6 @@
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import AssetChart from "@/components/Portfolio/AssetChart";
+import HistoryTrade from "@/components/Portfolio/HistoryTrade";
 import StatsGrid from "@/components/Portfolio/HomeSection";
 import PayoutTable from "@/components/Portfolio/PayOutSection";
 import PortfolioTable from "@/components/Portfolio/PortfolioTable";
@@ -10,18 +11,19 @@ function Page() {
   return (
     <div>
       <DefaultLayout>
-        <div className="bg-white ml-2">
+        <div className="ml-2 bg-white">
           <StatsGrid />
-          <div className="flex flex-col lg:flex-row gap-2">
-            <div className="w-full lg:w-[65%] shadow-xl mb-4 lg:mb-0">
+          <div className="flex flex-col gap-2 lg:flex-row">
+            <div className="mb-4 w-full shadow-xl lg:mb-0 lg:w-[65%]">
               <AssetChart />
             </div>
-            <div className="w-full lg:w-[32%] shadow-xl ">
+            <div className="w-full shadow-xl lg:w-[32%] ">
               <SunburstChart />
             </div>
           </div>
-          <PortfolioTable/>
-          <PayoutTable/>
+          <PortfolioTable />
+          <PayoutTable />
+          <HistoryTrade />{" "}
         </div>
       </DefaultLayout>
     </div>

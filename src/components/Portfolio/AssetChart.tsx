@@ -23,6 +23,8 @@ const AssetChart = () => {
           },
 
           rangeSelector: {
+            inputEnabled: false, // Disable the date range input fields
+
             buttons: [
               {
                 type: 'month',
@@ -49,13 +51,12 @@ const AssetChart = () => {
                 text: 'All',
               },
             ],
-            selected: 1, // Default selected button (3 months)
+            selected: 0, // Default selected button (3 months)
           },
 
           xAxis: {
             type: 'datetime',
             labels: {
-              format: '{value:%e %b}',
             },
           },
 

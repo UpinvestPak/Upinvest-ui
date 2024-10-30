@@ -49,22 +49,11 @@ const PayoutTable: React.FC = () => {
       sorter: (a, b) => a.dividends - b.dividends,
       render: (text) => (
         <p className="text-start  text-black">
-          Pkr {text} 
+        {text} 
         </p>
       ),
     },
-    {
-      title: (
-        <p className="md:whitespace-nowrap whitespace-normal">Bonus (shares)</p>
-      ),      dataIndex: "bonusShares",
-      key: "bonusShares",
-      sorter: (a, b) => a.bonusShares - b.bonusShares,
-      render: (text) => (
-        <p className="text-start text- text-black">
-          {text} 
-        </p>
-      ),
-    },
+   
     {
       title: (
         <p className="md:whitespace-nowrap whitespace-normal">Total Tax</p>
@@ -74,7 +63,19 @@ const PayoutTable: React.FC = () => {
       sorter: (a, b) => a.totalTax - b.totalTax,
       render: (text) => (
         <p className="text-start  text-black">
-         Pkr {text} 
+        {text} 
+        </p>
+      ),
+    },
+    {
+      title: (
+        <p className="md:whitespace-nowrap whitespace-normal">Net income</p>
+      ),      dataIndex: "bonusShares",
+      key: "bonusShares",
+      sorter: (a, b) => a.bonusShares - b.bonusShares,
+      render: (text) => (
+        <p className="text-start text- text-black">
+          {text} 
         </p>
       ),
     },
@@ -105,7 +106,6 @@ const PayoutTable: React.FC = () => {
 
 export default PayoutTable;
 
-const options = ["1D", "1W", "1M", "1Y"]; // Sample filter options
 
 const marketData: MarketData[] = [
   {

@@ -5,8 +5,9 @@ const StatsGrid = () => {
     { label: "Today's Return (%)", value: "-143.52", percentage: "-1.79%" },
     { label: "Reported dividend", value: "449.61K" },
     { label: "Total return", value: " 678k" },
-    { label: "1 year Return (%)", value: "-185.66", percentage: "-0.04%" },
     { label: "Market value", value: "29.00" },
+    { label: "1 year Return (%)", value: "-185.66", percentage: "-0.04%" },
+
     { label: "YTD return", value: "0.00" },
   ];
 

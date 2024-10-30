@@ -1,25 +1,25 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import sunburst from "highcharts/modules/sunburst";
 
-sunburst(Highcharts); // Initialize sunburst module
+sunburst(Highcharts);
 
 const SunburstChart = () => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Ensure this runs in the browser only
+    setIsClient(true);
   }, []);
 
   const data = [
-    { id: "0.0", parent: "", name: "World" }, // Root node
+    { id: "0.0", parent: "", color: "transparent", name: "" },
 
     // Continents (Level 1)
     { id: "1.1", parent: "0.0", name: "Asia", value: 460000000 },
     { id: "1.2", parent: "0.0", name: "Africa", value: 130000000 },
-    { id: "1.3", parent: "0.0", name: "Europe", value: 74700000},
+    { id: "1.3", parent: "0.0", name: "Europe", value: 74700000 },
     { id: "1.4", parent: "0.0", name: "Americas", value: 1000000000 },
     { id: "1.5", parent: "0.0", name: "Oceania", value: 43000000 },
 
@@ -53,14 +53,12 @@ const SunburstChart = () => {
     { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
     { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
     { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 }, 
+    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
     { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
     { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
-   
-    { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
-    
 
+    { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
+    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
   ];
 
   const options = {
@@ -70,8 +68,11 @@ const SunburstChart = () => {
     title: {
       text: "Holdings",
     },
-    subtitle: {
+    subtitle: {},
+    credits: {
+      enabled: false, // Remove Highcharts logo
     },
+
     series: [
       {
         type: "sunburst",
@@ -88,7 +89,7 @@ const SunburstChart = () => {
         },
         levels: [
           {
-            level: 1, 
+            level: 1,
             levelIsConstant: false,
             dataLabels: {
               filter: {
@@ -99,11 +100,11 @@ const SunburstChart = () => {
             },
           },
           {
-            level: 2, 
+            level: 2,
             colorByPoint: true,
           },
           {
-            level: 3, 
+            level: 3,
             colorVariation: {
               key: "brightness",
               to: -0.5,
@@ -114,8 +115,7 @@ const SunburstChart = () => {
     ],
     tooltip: {
       headerFormat: "",
-      pointFormat:
-        "Holdings",
+      pointFormat: "Holdings",
     },
   };
 
@@ -125,8 +125,11 @@ const SunburstChart = () => {
 
   return (
     <div>
-      <HighchartsReact highcharts={Highcharts} options={options} className="w-[120%] h-[450px]" />
-      
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={options}
+        className="h-[450px] w-[120%]"
+      />
     </div>
   );
 };

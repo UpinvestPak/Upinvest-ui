@@ -24,7 +24,7 @@ const PortfolioTable: React.FC = () => {
   const columns: ColumnsType<MarketData> = [
     {
       title: (
-        <p className="md:whitespace-nowrap whitespace-normal">Market</p>
+        <p className="md:whitespace-nowrap whitespace-normal">Symbol</p>
       ),
       dataIndex: "name",
       key: "name",
@@ -34,7 +34,7 @@ const PortfolioTable: React.FC = () => {
           <img
             src={record.icon}
             alt={record.name}
-            className="h-7 w-7 rounded-full md:h-8 md:w-8 -ml-1 md-ml-0"
+            className="h-7 w-7 rounded-full md:h-8 md:w-8 -ml-1 md-ml-0 hidden md:block"
             onError={(e) => (e.currentTarget.src = defaultImage)} // Fallback image on error
           />
           <div className="flex flex-col">
@@ -42,7 +42,7 @@ const PortfolioTable: React.FC = () => {
               {record.name}
             </p>
             <p className="text-xs font-thin ">
-              pkr <span className="font-medium">23.7</span>
+              Price  <span className="font-medium">23.7</span>
             </p>
           </div>
         </div>
@@ -104,10 +104,15 @@ const PortfolioTable: React.FC = () => {
       dataIndex: "dayReturn",
       key: "dayReturn",
       sorter: (a, b) => a.dayReturn - b.dayReturn,
-      render: (text) => (
-        <p className={`text-xs ${text >= 0 ? "text-green-500" : "text-red-500"}`}>
-          {text}%
-        </p>
+      render: (text, record) => (
+        <div className="text-xs flex flex-col items-start">
+          <p className={` ${text >= 0 ? "text-green-500" : "text-red-500"}`}>
+            {record.avgBuy}
+          </p>
+          <p className={`${text >= 0 ? "text-green-500" : "text-red-500"}`}>
+            {text}%
+          </p>
+        </div>
       ),
     },
     {
@@ -117,16 +122,18 @@ const PortfolioTable: React.FC = () => {
       dataIndex: "totalReturn",
       key: "totalReturn",
       sorter: (a, b) => a.totalReturn - b.totalReturn,
-      render: (text) => (
-        <p
-          className={`text-xs flex-grow ${
-            text >= 0 ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {text}%
-        </p>
+      render: (text, record) => (
+        <div className="text-xs flex flex-col items-start">
+          <p className={`${text >= 0 ? "text-green-500" : "text-red-500"}`}>
+            {record.avgBuy}
+          </p>
+          <p className={`${text >= 0 ? "text-green-500" : "text-red-500"}`}>
+            {text}%
+          </p>
+        </div>
       ),
     },
+    
     {
       title: "",
       key: "action",
