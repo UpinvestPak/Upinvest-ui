@@ -3,11 +3,27 @@ import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import sunburst from "highcharts/modules/sunburst";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
+import PieChart from "./PieChart";
+
 
 sunburst(Highcharts);
 
 const SunburstChart = () => {
   const [isClient, setIsClient] = useState(false);
+  const [isOpenFirst, setIsOpenFirst] = useState(false);
+  const [isOpenSecond, setIsOpenSecond] = useState(false);
+  const [selectedFirst, setSelectedFirst] = useState("Today");
+  const [selectedSecond, setSelectedSecond] = useState("Advanced");
+
+  const toggleDropdownFirst = () => {
+    setIsOpenFirst(!isOpenFirst);
+  };
+
+  const toggleDropdownSecond = () => {
+    setIsOpenSecond(!isOpenSecond);
+  };
 
   useEffect(() => {
     setIsClient(true);
@@ -125,12 +141,109 @@ const SunburstChart = () => {
 
   return (
     <div>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-        className="h-[450px] w-[120%]"
-      />
+    <div className="flex justify-between">
+      {/* First Dropdown */}
+      <div className="relative w-44 flex justify-end py-4 px-4">
+        <button
+          onClick={toggleDropdownFirst}
+          className="flex items-center justify-between w-full px-4 py-2 text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {selectedFirst}
+          {isOpenFirst ? <FaChevronUp className="w-4 h-4" /> : <FaChevronDown className="w-4 h-4" />}
+        </button>
+
+        {isOpenFirst && (
+          <div className="absolute z-10 w-full mt-2 bg-white border rounded-md shadow-lg">
+            <ul className="py-1 text-gray-700">
+              <li
+                className={`px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer ${
+                  selectedFirst === 'Today' ? 'bg-gray-100' : ''
+                }`}
+                onClick={() => {
+                  setSelectedFirst('Today');
+                  setIsOpenFirst(false);
+                }}
+              >
+                {selectedFirst === 'Today' && <FaCheck className="w-4 h-4 mr-2 text-black" />}
+                Today
+              </li>
+              <li
+                className={`px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer ${
+                  selectedFirst === 'Total' ? 'bg-gray-100' : ''
+                }`}
+                onClick={() => {
+                  setSelectedFirst('Total');
+                  setIsOpenFirst(false);
+                }}
+              >
+                {selectedFirst === 'Total' && <FaCheck className="w-4 h-4 mr-2 text-black" />}
+                Total
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Second Dropdown */}
+      <div className="relative w-44 flex justify-end py-4 px-4">
+        <button
+          onClick={toggleDropdownSecond}
+          className="flex items-center justify-between w-full px-4 py-2 text-gray-700 bg-white border rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {selectedSecond}
+          {isOpenSecond ? <FaChevronUp className="w-4 h-4" /> : <FaChevronDown className="w-4 h-4" />}
+        </button>
+
+        {isOpenSecond && (
+          <div className="absolute z-10 w-full mt-2 bg-white border rounded-md shadow-lg">
+            <ul className="py-1 text-gray-700">
+              <li
+                className={`px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer ${
+                  selectedSecond === 'Advanced' ? 'bg-gray-100' : ''
+                }`}
+                onClick={() => {
+                  setSelectedSecond('Advanced');
+                  setIsOpenSecond(false);
+                }}
+              >
+                {selectedSecond === 'Advanced' && <FaCheck className="w-4 h-4 mr-2 text-black" />}
+                Advanced
+              </li>
+              <li
+                className={`px-4 py-2 flex items-center hover:bg-gray-100 cursor-pointer ${
+                  selectedSecond === 'Standard' ? 'bg-gray-100' : ''
+                }`}
+                onClick={() => {
+                  setSelectedSecond('Standard');
+                  setIsOpenSecond(false);
+                }}
+              >
+                {selectedSecond === 'Standard' && <FaCheck className="w-4 h-4 mr-2 text-black" />}
+                Standard
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
+
+    {/* Conditional Rendering of Charts */}
+    <div className="mt-8 flex justify-center">
+      {selectedSecond === 'Standard' ? (
+        <div className="w-full max-w-lg">
+          <PieChart /> {/* Renders the pie chart component */}
+        </div>
+      ) : (
+        <div className="w-full max-w-lg">
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={options}
+            className="h-[450px] w-[100%]"
+          />
+        </div>
+      )}
+    </div>
+  </div>
   );
 };
 
