@@ -69,7 +69,7 @@ const SunburstChart = () => {
     },
     subtitle: {},
     credits: {
-      enabled: false, // Remove Highcharts logo
+      enabled: false, 
     },
 
     series: [

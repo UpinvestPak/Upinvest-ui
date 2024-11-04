@@ -14,7 +14,7 @@ const Holding = () => {
   const [isOpenFirst, setIsOpenFirst] = useState(false);
   const [isOpenSecond, setIsOpenSecond] = useState(false);
   const [selectedFirst, setSelectedFirst] = useState("Today");
-  const [selectedSecond, setSelectedSecond] = useState("Advanced");
+  const [selectedSecond, setSelectedSecond] = useState("Standard");
 
   const toggleDropdownFirst = () => {
     setIsOpenFirst(!isOpenFirst);
@@ -136,7 +136,7 @@ const Holding = () => {
           </div>
         ) : (
           <div className="w-full max-w-lg">
-           <SunburstChart/>
+            <SunburstChart />
           </div>
         )}
       </div>
