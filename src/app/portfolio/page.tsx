@@ -1,6 +1,7 @@
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import AssetChart from "@/components/Portfolio/AssetChart";
 import HistoryTrade from "@/components/Portfolio/HistoryTrade";
+import Holding from "@/components/Portfolio/Holdings";
 import StatsGrid from "@/components/Portfolio/HomeSection";
 import PayoutTable from "@/components/Portfolio/PayOutSection";
 import PortfolioTable from "@/components/Portfolio/PortfolioTable";
@@ -18,7 +19,7 @@ function Page() {
               <AssetChart />
             </div>
             <div className="w-full shadow-xl lg:w-[32%] ">
-              <SunburstChart />
+              <Holding />
             </div>
           </div>
           <PortfolioTable />

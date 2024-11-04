@@ -20,8 +20,11 @@ const MovingAverageChart = () => {
             renderTo: chartContainerRef.current, // Correctly specify the renderTo property
             height: 400,
           },
+          
 
           rangeSelector: {
+            inputEnabled: false, // Disable the date range input fields
+
             buttons: [
               {
                 type: 'month',

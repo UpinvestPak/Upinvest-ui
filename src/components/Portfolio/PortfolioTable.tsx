@@ -183,7 +183,7 @@ const markets: MarketData[] = [
     icon: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Engro_logo.png", // Engro logo
     name: "Eng",
     totalCost: 150000,
-    avgBuy: 300,
+    avgBuy: 30.5,
     shares: 500,
     marketValue: 160000,
     dayReturn: 1.5,
@@ -193,7 +193,7 @@ const markets: MarketData[] = [
     icon: "https://upload.wikimedia.org/wikipedia/en/thumb/e/e8/Habib_Bank_Limited_logo.svg/1200px-Habib_Bank_Limited_logo.svg.png", // HBL logo
     name: "HhB",
     totalCost: 120000,
-    avgBuy: 150,
+    avgBuy: 1.50,
     shares: 800,
     marketValue: 125000,
     dayReturn: -0.8,
@@ -213,7 +213,7 @@ const markets: MarketData[] = [
     icon: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Oil_Company_logo.png", // Placeholder oil company logo
     name: "Oil",
     totalCost: 180000,
-    avgBuy: 90,
+    avgBuy: 9.80,
     shares: 2000,
     marketValue: 170000,
     dayReturn: -1.3,
@@ -233,7 +233,7 @@ const markets: MarketData[] = [
     icon: "https://upload.wikimedia.org/wikipedia/en/thumb/3/32/Unilever.svg/1024px-Unilever.svg.png", // Unilever logo
     name: "Unil",
     totalCost: 500000,
-    avgBuy: 2500,
+    avgBuy: 250,
     shares: 200,
     marketValue: 520000,
     dayReturn: 0.2,

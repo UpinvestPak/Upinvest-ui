@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import MovingAverageChart from "./indecesChart";
-import ApexChart from "./IndecesChart2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
@@ -38,7 +37,7 @@ const IndecesTable: React.FC = () => {
     <div className=" md:mx-3 ">
       <div className=" flex items-center justify-between">
         {/* Title */}
-        <h1 className="text-2xl font-semibold text-black">Indices Overview</h1>
+        <h1 className="text-2xl font-semibold text-black">Indeces Overview</h1>
       </div>
 
       <div className="mt-6">
