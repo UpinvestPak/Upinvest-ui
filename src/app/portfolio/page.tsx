@@ -14,11 +14,11 @@ function Page() {
       <DefaultLayout>
         <div className="ml-2 bg-white">
           <StatsGrid />
-          <div className="flex flex-col gap-2 lg:flex-row">
-            <div className="mb-4 w-full shadow-xl lg:mb-0 lg:w-[65%]">
+          <div className="flex flex-col gap-4 lg:flex-row mt-7">
+            <div className=" w-full md:shadow-md lg:mb-0 lg:w-[65%] border-2  ">
               <AssetChart />
             </div>
-            <div className="w-full shadow-xl lg:w-[32%] ">
+            <div className="w-full md:shadow-lg border-2 lg:w-[32.5%] ">
               <Holding />
             </div>
           </div>

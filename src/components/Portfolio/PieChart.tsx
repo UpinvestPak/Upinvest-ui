@@ -71,7 +71,7 @@ const EggYolkChart: React.FC<ChartProps> = ({ className }) => {
     <div className={`w-full ${className}`}>
       <div 
         id="chart-container" 
-        className="min-w-[380px] max-w-[800px] mx-auto my-4 -mt-8"
+        className="md:h-full h-[300px] mx-auto -mt-12"
       />
       <style jsx>{`
         .highcharts-data-table table {

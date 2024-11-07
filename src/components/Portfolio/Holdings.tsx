@@ -94,6 +94,20 @@ const Holding = () => {
           {isOpenSecond && (
             <div className="absolute z-10 mt-2 w-full rounded-md border bg-white shadow-lg">
               <ul className="py-1 text-gray-700">
+                    <li
+                  className={`flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 ${
+                    selectedSecond === "Standard" ? "bg-gray-100" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedSecond("Standard");
+                    setIsOpenSecond(false);
+                  }}
+                >
+                  {selectedSecond === "Standard" && (
+                    <FaCheck className="mr-2 h-4 w-4 text-black" />
+                  )}
+                  Standard
+                </li>
                 <li
                   className={`flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 ${
                     selectedSecond === "Advanced" ? "bg-gray-100" : ""
@@ -108,20 +122,7 @@ const Holding = () => {
                   )}
                   Advanced
                 </li>
-                <li
-                  className={`flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 ${
-                    selectedSecond === "Standard" ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedSecond("Standard");
-                    setIsOpenSecond(false);
-                  }}
-                >
-                  {selectedSecond === "Standard" && (
-                    <FaCheck className="mr-2 h-4 w-4 text-black" />
-                  )}
-                  Standard
-                </li>
+            
               </ul>
             </div>
           )}

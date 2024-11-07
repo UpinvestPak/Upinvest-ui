@@ -111,7 +111,7 @@ const AssetChart = () => {
 
   return (
     <div className="flex flex-col items-center ">
-      <div ref={chartContainerRef} id="container" className="w-full h-[400px]" />
+      <div ref={chartContainerRef} id="container" className="w-full md:h-[400px] h-[310px]" />
     </div>
   );
 };
