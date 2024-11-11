@@ -17,7 +17,7 @@ const Header = (props: {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
   return (
-    <header className="sticky top-0 z-50 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+    <header className="sticky  top-0 z-40 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 pt-2 pb-1 md:py-3 shadow-2 md:px-6 2xl:px-11">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           {/* <!-- Hamburger Toggle BTN --> */}
@@ -27,7 +27,7 @@ const Header = (props: {
               e.stopPropagation();
               props.setSidebarOpen(!props.sidebarOpen);
             }}
-            className="z-50 block rounded-sm border border-stroke bg-white  shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+            className="z-40 block rounded-sm border border-stroke bg-white  shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
           >
             <span className="relative block h-3.5 w-5.5 cursor-pointer">
               <span className="du-block absolute right-0 h-full w-full">

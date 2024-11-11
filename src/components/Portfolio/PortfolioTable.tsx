@@ -20,7 +20,6 @@ const PortfolioTable: React.FC = () => {
   const isLargeScreen = useMedia({ minWidth: 1024 }); 
   const defaultImage = "https://via.placeholder.com/150"; 
 
-
   const columns: ColumnsType<MarketData> = [
     {
       title: (
@@ -30,7 +29,7 @@ const PortfolioTable: React.FC = () => {
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
-        <div className="flex items-start space-x-1 text-start md:-ml-3    flex-grow">
+        <div className="flex items-start space-x-1 text-start md:-ml-3 flex-grow">
           <img
             src={record.icon}
             alt={record.name}
@@ -41,7 +40,7 @@ const PortfolioTable: React.FC = () => {
             <p className="text-xs font-medium leading-tight text-black md:text-base">
               {record.name}
             </p>
-            <p className="text-xs font-thin ">
+            <p className="text-xs font-thin">
               Price  <span className="font-medium">23.7</span>
             </p>
           </div>
@@ -91,7 +90,6 @@ const PortfolioTable: React.FC = () => {
       ),
       dataIndex: "marketValue",
       key: "marketValue",
-      width: "20%",
       sorter: (a, b) => a.marketValue - b.marketValue,
       render: (text) => (
         <p className="text-xs text-black md:text-base">{text}</p>
@@ -105,7 +103,7 @@ const PortfolioTable: React.FC = () => {
       key: "dayReturn",
       sorter: (a, b) => a.dayReturn - b.dayReturn,
       render: (text, record) => (
-        <div className="text-xs flex flex-col items-start">
+        <div className="text-xs md:text-sm flex flex-col items-start">
           <p className={` ${text >= 0 ? "text-green-500" : "text-red-500"}`}>
             {record.avgBuy}
           </p>
@@ -123,7 +121,7 @@ const PortfolioTable: React.FC = () => {
       key: "totalReturn",
       sorter: (a, b) => a.totalReturn - b.totalReturn,
       render: (text, record) => (
-        <div className="text-xs flex flex-col items-start">
+        <div className="text-xs md:text-sm flex flex-col items-start">
           <p className={`${text >= 0 ? "text-green-500" : "text-red-500"}`}>
             {record.avgBuy}
           </p>
@@ -133,13 +131,11 @@ const PortfolioTable: React.FC = () => {
         </div>
       ),
     },
-    
     {
       title: "",
       key: "action",
-      width: "50px", // Set a very small width for the last column
-      responsive: ["md"], // Hidden in mobile view, show on larger screens
-
+      width: 30,
+      responsive: ["md"], 
       render: (_, record) => (
         <div className="flex justify-end">
           <button className="text-gray-400 hover:text-black" aria-label="More options">

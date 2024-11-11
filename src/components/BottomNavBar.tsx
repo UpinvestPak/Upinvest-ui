@@ -10,7 +10,7 @@ function BottomNavBar() {
 
   return (
     <div className="2xsm:flex md:hidden">
-      <div className="fixed bottom-0.5 left-1/2 z-50 h-18 w-full max-w-lg -translate-x-1/2 rounded-t-[2rem] border border-gray-200 bg-white dark:bg-gray-700">
+      <div className="fixed bottom-0.5 left-1/2 z-40 h-18 w-full max-w-lg -translate-x-1/2 rounded-t-[2rem] border border-gray-200 bg-white dark:bg-gray-700">
         <div className="mx-auto grid h-full max-w-lg grid-cols-5">
           <Link
             href="/"

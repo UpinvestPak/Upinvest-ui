@@ -7,11 +7,13 @@ import PayoutTable from "@/components/Portfolio/PayOutSection";
 import PortfolioTable from "@/components/Portfolio/PortfolioTable";
 import SunburstChart from "@/components/Portfolio/SunburstChart ";
 import React from "react";
+import AddPortolio from "@/components/Portfolio/AddPortolio";
 
 function Page() {
   return (
     <div>
       <DefaultLayout>
+        <AddPortolio/>
         <div className="ml-2 bg-white">
           <StatsGrid />
           <div className="flex flex-col gap-4 lg:flex-row mt-7">

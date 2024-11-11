@@ -26,7 +26,7 @@ export default function DefaultLayout({
           {/* <!-- ===== Header End ===== --> */}
 
           {/* <!-- ===== Main Content Start ===== --> */}
-          <main className="relative z-0 flex-1">
+          <main className="relative  flex-1">
             <div className="mx-auto max-w-screen-2xl p-1 md:p-2 2xl:p-4">
               {children}
             </div>

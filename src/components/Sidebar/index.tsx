@@ -3,8 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import SidebarLinkGroup from "./SidebarLinkGroup";
-import Modal from "@/utils/modalPorfilio";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -14,8 +12,6 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notifying, setNotifying] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -57,12 +53,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen); // Toggles the dropdown open/close state
   };
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+
   return (
     <aside
       ref={sidebar}
-      className={`w-${sidebarExpanded ? "50" : "20"}  absolute left-0 top-0  z-40 flex h-screen flex-col  bg-[#ffffff] duration-300 ease-linear  lg:static lg:translate-x-0 ${
+      className={`w-${sidebarExpanded ? "50" : "20"}  absolute left-0 top-0  z-1 flex h-screen flex-col  bg-[#ffffff] duration-300 ease-linear  lg:static lg:translate-x-0 ${
         sidebarOpen
           ? "translate-x-0"
           : "-translate-x-full  border-r-2 border-r-primary"
@@ -108,7 +103,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <div className="relative mt-13 flex items-end justify-end">
           <button
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
-            className="absolute right-[-16px] top-1/2 z-50 hidden h-7 w-7 -translate-y-1/2 transform rounded-full border-2 border-primary bg-primary md:flex"
+            className="absolute right-[-16px] top-1/2 z-40 hidden h-7 w-7 -translate-y-1/2 transform rounded-full border-2 border-primary bg-primary md:flex"
             style={{ overflow: "visible" }} // Ensure overflow is visible for the button
           >
             <svg
@@ -133,10 +128,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <ul className="mb-6 flex flex-col gap-6">
               <li>
                 <Link
-                  href="/portfolio"
+                  href="/"
                   onClick={toggleDropdown}
                   className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium text-bodydark1 duration-300 ease-in-out  ${
-                    pathname.includes("/portfolio") && "w-full "
+                    pathname.includes("/") && "w-full "
                   }`}
                 >
                   <svg
@@ -170,25 +165,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   )}
                 </Link>
               </li>
-              <SidebarLinkGroup
-                activeCondition={pathname === "#" || pathname.includes("/port")}
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <Link
-                        href="/portfolio"
-                        className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium text-black duration-300 ease-in-out ${
-                          (pathname === "/" || pathname.includes("/portfolio")) && ""
-                        }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        <svg
+              <li>
+                <Link
+                  href="/portfolio"
+                  onClick={toggleDropdown} // Toggles the dropdown when clicked
+                  className={`group relative flex items-center gap-2 rounded-sm py-2 font-medium 
+                       text-black duration-300 ease-in-out ${
+                         pathname.includes("/portfolio") && "w-full  "
+                       }`}
+                >
+                     <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="28"
                           height="28"
@@ -204,12 +190,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <path d="M3 6h18"></path>
                           <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
-                        {sidebarExpanded && <span>My Portfolio</span>}
-                      </Link>
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                  {sidebarExpanded && (
+                    <span className="text-black">My Portfolio</span>
+                  )}
+                </Link>
+              </li>
 
               <li>
                 <Link
@@ -282,7 +267,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             </ul>
           </div>
         </nav>
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </aside>
   );
