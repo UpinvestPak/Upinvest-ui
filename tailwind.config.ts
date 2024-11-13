@@ -227,6 +227,16 @@ const config: Config = {
       backgroundImage: {
         video: "url('../images/video/video.png')",
       },
+      order: {
+        1: '1',
+        2: '2',
+        3: '3',
+        4: '4',
+        5: '5',
+        6: '6',
+        7: '7',
+        8: '8',
+      },
       content: {
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
       },

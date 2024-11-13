@@ -66,9 +66,9 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({ isOpen, onClose }) =>
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-gray-500 bg-opacity-50">
       <div className="absolute inset-0" onClick={onClose}></div>
 
-      <div className="relative md:max-h-[98vh] max-h-[90vh] w-full max-w-2xl transform overflow-y-auto rounded-2xl bg-white shadow-xl scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400 hover:scrollbar-thumb-primary">
+      <div className="relative md:max-h-[98vh] max-h-[93vh] w-full max-w-2xl transform overflow-y-auto rounded-2xl bg-white shadow-xl scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400 hover:scrollbar-thumb-primary">
         <div className="bg-white px-6 pb-6 pt-6">
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Trade Type */}
             <div>
               <h3 className="mb-2 text-lg font-medium">Trade Type</h3>
@@ -130,20 +130,21 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({ isOpen, onClose }) =>
 
             {/* Commission Type Radio Buttons */}
             <div>
-              <h3 className="mb-1 text-lg font-medium">Deductions Type</h3>
-              <div className="grid grid-cols-3 gap-4 rounded-lg border-gray-200 bg-white p-4">
-                <CommissionTypeRadio
-                  value="fixed"
-                  label="Fixed Commission"
-                  selected={commissionType}
-                  onChange={setCommissionType}
-                />
-                <CommissionTypeRadio
+              <h3 className=" text-lg font-medium">Deductions Type</h3>
+              <div className="grid grid-cols-3 gap-4 rounded-lg border-gray-200 bg-white px-4 py-2 ">
+              <CommissionTypeRadio
                   value="standard"
                   label="Standard"
                   selected={commissionType}
                   onChange={setCommissionType}
                 />
+                <CommissionTypeRadio
+                  value="fixed"
+                  label="Fixed"
+                  selected={commissionType}
+                  onChange={setCommissionType}
+                />
+               
                 <CommissionTypeRadio
                   value="custom"
                   label="Custom"
@@ -159,13 +160,13 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({ isOpen, onClose }) =>
             </div>
 
             {/* Summary Box */}
-            <div className="grid grid-cols-4 gap-4 rounded-lg bg-gray-50 p-4">
+            <div className="grid grid-cols-4 md:gap-4 gap-2  rounded-lg bg-gray-50 md:p-3 p-2">
               <div>
                 <p className="text-sm text-gray-600">Investment</p>
                 <p className="text-sm font-medium">PKR 0.00</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Cost/Deduction</p>
+                <p className="text-sm text-gray-600">Deduction</p>
                 <p className="text-sm font-medium">PKR 0.00</p>
               </div>
               <div>
