@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Plus, BarChart3, ArrowLeftRight, Coins, Settings, X } from "lucide-react";
 import { BuyTradeModal } from "../Modals/BuyTradeModal";
+import AddDividendModal from "../Modals/AddDividendModal";
 
 interface MenuItem {
   [x: string]: any;
@@ -15,7 +16,9 @@ interface MenuItem {
 
 const AddPortfolio = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [buyModalOpen, setBuyModalOpen] = useState(false);
+  const [dividendModalOpen, setDividendModalOpen] = useState(false);
+
   const [selectedAction, setSelectedAction] = useState<MenuItem | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -54,7 +57,12 @@ const AddPortfolio = () => {
 
   const handleActionClick = (item: MenuItem) => {
     setSelectedAction(item);
-    setIsModalOpen(true);
+    if (item.label === "Add a Dividend") {
+      setDividendModalOpen(true);
+    } else if (item.label === "New Buy Trade" || item.label === "New Sell Trade") {
+      setBuyModalOpen(true);
+    }
+
     setIsDropdownOpen(false);
     setIsMobileMenuOpen(false);
   };
@@ -103,9 +111,11 @@ const AddPortfolio = () => {
         <div className="relative">
           {/* Mobile Menu Items */}
           {isMobileMenuOpen && (
-            <div className="absolute bottom-16 right-0 flex flex-col-reverse gap-3">
+            <div className="absolute bottom-16 right-0 flex flex-col  gap-3">
               {menuItems.map((item, index) => (
-                <div key={index} className="flex items-center justify-end gap-3">
+                <div key={index} className="flex items-center justify-end gap-3"
+                onClick={() => handleActionClick(item)}
+>
                   {/* Text Label */}
                   <div className="rounded-lg bg-primary text-white  px-3 py-2 shadow-lg text-nowrap">
                     <span className="text-sm font-medium text-white text-nowrap">
@@ -142,10 +152,15 @@ const AddPortfolio = () => {
       </div>
 
       <BuyTradeModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={buyModalOpen}
+        onClose={() => setBuyModalOpen(false)}
+
       />
-    </div>
+      <AddDividendModal
+      isOpen={dividendModalOpen}
+      onClose={() => setDividendModalOpen(false)}
+      />
+      </div>
   );
 };
 

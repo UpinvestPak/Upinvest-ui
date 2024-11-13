@@ -22,7 +22,7 @@ const PayoutTable: React.FC = () => {
       title: "Symbol",
       dataIndex: "symbol",
       key: "symbol",
-      width: isLargeScreen ? 370 : 128,
+      width: isLargeScreen ? 390 : 158,
       sorter: (a, b) => a.symbol.localeCompare(b.symbol),
       render: (text, record) => (
         <div className="flex items-start space-x-1 text-start md:-ml-2">
@@ -48,7 +48,7 @@ const PayoutTable: React.FC = () => {
       key: "dividends",
       sorter: (a, b) => a.dividends - b.dividends,
       render: (text) => (
-        <p className="text-start  text-black">
+        <p className="text-start text-base text-black">
         {text} 
         </p>
       ),
@@ -56,36 +56,35 @@ const PayoutTable: React.FC = () => {
    
     {
       title: (
-        <p className="md:whitespace-nowrap whitespace-normal">Total Tax</p>
+        <p className="whitespace-nowrap ">Total Tax</p>
       ),    
         dataIndex: "totalTax",
       key: "totalTax",
       sorter: (a, b) => a.totalTax - b.totalTax,
       render: (text) => (
-        <p className="text-start  text-black">
+        <p className="text-start text-base text-black">
         {text} 
         </p>
       ),
     },
     {
       title: (
-        <p className="md:whitespace-nowrap whitespace-normal">Net income</p>
+        <p className="whitespace-nowrap ">Net income</p>
       ),      dataIndex: "bonusShares",
       key: "bonusShares",
       sorter: (a, b) => a.bonusShares - b.bonusShares,
       render: (text) => (
-        <p className="text-start text- text-black">
+        <p className="text-start text-base text-black">
           {text} 
         </p>
       ),
     },
   ];
 
-  const [selected, setSelected] = useState("1D");
 
   return (
     <div className="relative ">
-      <div className="flex items-center justify-between mt-16 py-5">
+      <div className="flex items-center justify-between md:mt-10 mt-5 py-5">
         <h1 className="text-2xl font-semibold text-black">Payout Overview</h1>
       </div>
 

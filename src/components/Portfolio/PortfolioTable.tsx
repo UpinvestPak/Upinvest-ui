@@ -166,7 +166,7 @@ const PortfolioTable: React.FC = () => {
               {record.name}
             </p>
             <p className="text-xs font-thin">
-              Price <span className="font-medium">{record.avgBuy}</span>
+              Price <span className="font-medium text-sm">{record.avgBuy}</span>
             </p>
           </div>
         </div>
@@ -222,7 +222,7 @@ const PortfolioTable: React.FC = () => {
       key: "dayReturn",
       sorter: (a, b) => a.dayReturn - b.dayReturn,
       render: (text) => (
-        <div className="flex flex-col items-start text-xs md:text-sm">
+        <div className="flex flex-col items-start text-base  ">
           <p className={`${text >= 0 ? "text-green-500" : "text-red-500"}`}>
             {text}%
           </p>
@@ -237,11 +237,11 @@ const PortfolioTable: React.FC = () => {
       key: "totalReturn",
       sorter: (a, b) => a.totalReturn - b.totalReturn,
       render: (text) => (
-        <div className="flex flex-col items-start text-xs md:text-sm">
+        <div className="flex flex-col items-start text-base ">
           <p className={`${text >= 0 ? "text-green-500" : "text-red-500"}`}>
             {text}%
           </p>
-        </div>
+        </div> 
       ),
     },
     {
@@ -264,7 +264,7 @@ const PortfolioTable: React.FC = () => {
 
   return (
     <div className="md:mx- relative">
-      <div className="mt-5 flex items-center justify-between py-7">
+      <div className="md:mt-5 flex items-center justify-between py-7">
         <h1 className="text-2xl font-semibold text-black">
           Portfolio Holdings
         </h1>
