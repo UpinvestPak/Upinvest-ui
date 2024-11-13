@@ -24,7 +24,7 @@ const HistoryTrade: React.FC = () => {
       title: <p className="md:whitespace-nowrap whitespace-normal">Symbol</p>,
       dataIndex: "name",
       key: "name",
-      width: isLargeScreen ? 390 : 148,
+      width: isLargeScreen ? 390 : 128,
 
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (

@@ -59,7 +59,7 @@ const PortfolioTable: React.FC = () => {
             </div>
           </div>
 
-          <div className="ml-6 grid grid-cols-3 gap-3">
+          <div className="ml-6 grid grid-cols-3 gap-2">
             <div>
               <div className="mb-1 text-xs font-medium uppercase text-gray-500">
                 TOTAL COST
@@ -138,7 +138,7 @@ const PortfolioTable: React.FC = () => {
           </div>
 
           {/* Three dots menu */}
-          <button className="absolute right-1 top-13  rounded-full p-1 hover:bg-gray-100">
+          <button className="absolute right-0 top-13  rounded-full p-1 hover:bg-gray-100">
             <FiMoreVertical className="h-5 w-5 text-gray-500 " />
           </button>
         </div>
