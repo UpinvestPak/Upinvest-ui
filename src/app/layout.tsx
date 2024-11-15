@@ -8,15 +8,26 @@ import "@/css/simple-datatables.css";
 import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
+import { ApolloProvider } from "@apollo/client";
+import { client } from "@/utils/apolloClient";
+import { useAuthRedirect } from "@/hook/useAuthRedirect";
+import { usePathname } from 'next/navigation';
+
+// Create a separate auth wrapper component
+const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const isProtectedRoute = !pathname?.includes('/auth/');
+  useAuthRedirect(isProtectedRoute);
+  
+  return <>{children}</>;
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const [loading, setLoading] = useState<boolean>(true);
-
-  // const pathname = usePathname();
+}) {
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
@@ -25,9 +36,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
-        </div>
+        <ApolloProvider client={client}>
+          <AuthWrapper>
+            {loading ? <Loader /> : children}
+          </AuthWrapper>
+        </ApolloProvider>
       </body>
     </html>
   );

@@ -1,19 +1,19 @@
+'use client'
 import ECommerce from "@/components/Dashboard/E-commerce";
-import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-
-export const metadata: Metadata = {
-  title:
-    "Upinvest | Best to invest your savings",
-  description: "Best to invest your savings",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthRedirect } from "@/hook/useAuthRedirect";
 
 export default function Home() {
+  const router = useRouter();
+
+
+  useAuthRedirect(true);
+
   return (
-    <>
-      <DefaultLayout>
-        <ECommerce />
-      </DefaultLayout>
-    </>
+    <DefaultLayout>
+      <ECommerce />
+    </DefaultLayout>
   );
 }

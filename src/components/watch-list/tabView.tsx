@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { FiPlus, FiFilter, FiGrid } from 'react-icons/fi';
 import MarketTable from './watchTable';
-import Modal from './Model';
+import Modal from './WatchListModel';
 import WatchListTable from './watchTable';
 
 

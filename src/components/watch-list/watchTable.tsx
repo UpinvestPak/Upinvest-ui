@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import useMedia from 'use-media';
+import { useQuery, gql } from '@apollo/client';
 
+// Define GraphQL query
+const GET_WATCHLIST = gql`
+  query GetWatchList {
+    watchList {
+      id
+      symbols {
+        id
+        name
+        symbol
+      }
+    }
+  }
+`;
+
+interface WatchListSymbol {
+  id: number;
+  name: string;
+  symbol: string;
+}
 
 interface MarketData {
   icon: string;
@@ -15,20 +35,41 @@ interface MarketData {
   rangeHigh: number;
   currentPrice: number;
   changeDirection: 'up' | 'down';
-  ytdChange: number; // Year-to-Date Change percentage
-  oneYearChange: number; // 1-Year Change percentage
+  ytdChange: number;
+  oneYearChange: number;
 }
 
-
 const WatchListTable: React.FC = () => {
-  const isLargeScreen = useMedia({ minWidth: 1024 }); // lg screen
+  const isLargeScreen = useMedia({ minWidth: 1024 });
+  const { loading, error, data } = useQuery(GET_WATCHLIST);
+  const [tableData, setTableData] = useState<MarketData[]>([]);
+
+  // Transform watchlist data to match MarketData interface
+  useEffect(() => {
+    if (data?.watchList?.symbols) {
+      const transformedData: MarketData[] = data.watchList.symbols.map((symbol: WatchListSymbol) => ({
+        icon: '/path/to/default/icon.png', // Add default icon or handle icons separately
+        name: symbol.name,
+        company: symbol.symbol, // Using symbol as company name, adjust as needed
+        change: 0, // Add default values for required fields
+        percentage: 0,
+        buyPrice: 0,
+        rangeLow: 0,
+        rangeHigh: 0,
+        currentPrice: 0,
+        changeDirection: 'up',
+        ytdChange: 0,
+        oneYearChange: 0
+      }));
+      setTableData(transformedData);
+    }
+  }, [data]);
 
   const columns: ColumnsType<MarketData> = [
     {
       title: 'Market',
       dataIndex: 'name',
       key: 'name',
-      // Dynamically set width based on screen size
       width: isLargeScreen ? 170 : 118,
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => (
@@ -40,19 +81,17 @@ const WatchListTable: React.FC = () => {
           />
           <div className="flex flex-col">
             <p className="text-xs font-medium leading-tight text-black md:text-base">
-              {record.name}
+              {record.company}
             </p>
             <p className="text-[10px] whitespace-break-spaces leading-tight text-gray-500 md:text-xs md:-mt-1">
               <span className="">
-                {record.company}
+                {record.name}
               </span>
             </p>
           </div>
         </div>
       ),
     },
-    
-    
     {
       title: 'Price(pkr)',
       dataIndex: 'buyPrice',
@@ -179,13 +218,13 @@ const WatchListTable: React.FC = () => {
   ];
   
   const [selected, setSelected] = useState("1D");
-  const options = ["1D", "7D", "1M", "6M", "1Y","3Y", "5Y"];
+  const options = ["1D", "7D", "1M", "6M", "1Y", "3Y", "5Y"];
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading watchlist</div>;
 
   return (
-    
     <div className="relative">
-      {/* Sticky Filters */}
       <div className="bg-[#f1f5f9] p-1 md:p- rounded-md mt-4 space-x-2 sticky top-0 z-10">
         {options.map((option) => (
           <button
@@ -200,138 +239,24 @@ const WatchListTable: React.FC = () => {
         ))}
       </div>
 
-      {/* Table Container with Sticky Header */}
       <div className="mt-2 w-full rounded-md bg-white overflow-auto no-scrollbar">
         <Table
           columns={columns}
-          dataSource={markets}
+          dataSource={tableData}
           pagination={false}
           rowKey="name"
           className="custom-table w-full table-fixed no-scrollbar"
-          scroll={{ y: 400 }} // Ensure vertical scrolling works
+          scroll={{ y: 400 }}
         />
       </div>
     </div>
-
-  
   );
 };
 
 export default WatchListTable;
 
 const markets: MarketData[] = [
-  {
-    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png", 
-    name: "ENGRO",
-    company: "Engro Corporation",
-    change: 5,
-    percentage: 1.5,
-    buyPrice: 30.0,
-    rangeLow: 250,
-    rangeHigh: 350,
-    currentPrice: 320,
-    changeDirection: "up",
-    ytdChange: 12,
-    oneYearChange: 15,
-  },
-  {
-    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png", 
-    name: "HBL",
-    company: "Habib Bank Limited",
-    change: -3,
-    percentage: -1,
-    buyPrice: 1.20,
-    rangeLow: 100,
-    rangeHigh: 150,
-    currentPrice: 115,
-    changeDirection: "down",
-    ytdChange: -8,
-    oneYearChange: -10,
-  },
-  {
-    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png", 
-    name: "LUCK",
-    company: "Lucky Cement",
-    change: 7,
-    percentage: 2.1,
-    buyPrice: 60.70,
-    rangeLow: 550,
-    rangeHigh: 700,
-    currentPrice: 650,
-    changeDirection: "up",
-    ytdChange: 18,
-    oneYearChange: 20,
-  },
-  {
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/PTCL_Logo.svg/2048px-PTCL_Logo.svg.png", 
-    name: "PTCL",
-    company: "Pakistan Telecommunication Company Limited",
-    change: 0.5,
-    percentage: 0.2,
-    buyPrice: 12,
-    rangeLow: 10,
-    rangeHigh: 15,
-    currentPrice: 13,
-    changeDirection: "up",
-    ytdChange: 5,
-    oneYearChange: 6,
-  },
-  {
-    icon: "https://upload.wikimedia.org/wikipedia/en/6/66/Oil_and_Gas_Development_Company_logo.png", 
-    name: "OGDC",
-    company: "Oil & Gas Development Company",
-    change: -2,
-    percentage: -0.7,
-    buyPrice: 10.80,
-    rangeLow: 90,
-    rangeHigh: 120,
-    currentPrice: 98,
-    changeDirection: "down",
-    ytdChange: -4,
-    oneYearChange: -5,
-  },
-  {
-    icon: "https://upload.wikimedia.org/wikipedia/en/d/da/Fauji_Fertilizer_Company_Logo.png", 
-    name: "FFC",
-    company: "Fauji Fertilizer Company",
-    change: 3,
-    percentage: 1,
-    buyPrice: 105,
-    rangeLow: 95,
-    rangeHigh: 115,
-    currentPrice: 110,
-    changeDirection: "up",
-    ytdChange: 8,
-    oneYearChange: 10,
-  },
-  {
-    icon: "https://seeklogo.com/images/U/unilever-logo-3B472C0E13-seeklogo.com.png", 
-    name: "UNILEVER",
-    company: "Unilever Pakistan",
-    change: 4,
-    percentage: 2,
-    buyPrice: 2.7,
-    rangeLow: 2200,
-    rangeHigh: 2600,
-    currentPrice: 2450,
-    changeDirection: "up",
-    ytdChange: 10,
-    oneYearChange: 12,
-  },
-  {
-    icon: "https://upload.wikimedia.org/wikipedia/en/thumb/9/91/Pakistan_International_Airlines_Logo.svg/1024px-Pakistan_International_Airlines_Logo.svg.png", 
-    name: "PIA",
-    company: "Pakistan International Airlines",
-    change: -0.3,
-    percentage: -2,
-    buyPrice: 5.5,
-    rangeLow: 3,
-    rangeHigh: 7,
-    currentPrice: 4.5,
-    changeDirection: "down",
-    ytdChange: -15,
-    oneYearChange: -18,
-  },
+  
   {
     icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png", 
     name: "ENGRO",
@@ -360,62 +285,7 @@ const markets: MarketData[] = [
     ytdChange: -8,
     oneYearChange: -10,
   },
-  {
-    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png", 
-    name: "LUCK",
-    company: "Lucky Cement",
-    change: 7,
-    percentage: 2.1,
-    buyPrice: 600,
-    rangeLow: 550,
-    rangeHigh: 700,
-    currentPrice: 650,
-    changeDirection: "up",
-    ytdChange: 18,
-    oneYearChange: 20,
-  },
-  {
-    icon: "https://seeklogo.com/images/E/engro-logo-2D55F166AB-seeklogo.com.png", 
-    name: "ENGRO",
-    company: "Engro Corporation",
-    change: 5,
-    percentage: 1.5,
-    buyPrice: 3.88,
-    rangeLow: 250,
-    rangeHigh: 350,
-    currentPrice: 320,
-    changeDirection: "up",
-    ytdChange: 12,
-    oneYearChange: 15,
-  },
-  {
-    icon: "https://seeklogo.com/images/H/habib-bank-limited-logo-68A77260BA-seeklogo.com.png", 
-    name: "HBL",
-    company: "Habib Bank Limited",
-    change: -3,
-    percentage: -1,
-    buyPrice: 1.8,
-    rangeLow: 100,
-    rangeHigh: 150,
-    currentPrice: 115,
-    changeDirection: "down",
-    ytdChange: -8,
-    oneYearChange: -10,
-  },
-  {
-    icon: "https://www.lucky-cement.com/wp-content/themes/lucky/assets/images/logo/lucky_cement_logo.png", 
-    name: "LUCK",
-    company: "Lucky Cement",
-    change: 7,
-    percentage: 2.1,
-    buyPrice: 600,
-    rangeLow: 550,
-    rangeHigh: 700,
-    currentPrice: 650,
-    changeDirection: "up",
-    ytdChange: 18,
-    oneYearChange: 20,
-  },
+
 ];
 
 
