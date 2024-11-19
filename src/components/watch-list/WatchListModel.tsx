@@ -1,270 +1,128 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@apollo/client";
 import { Search, X, Plus, Check } from "lucide-react";
+import { useWatchlist } from "@/hooks/useWatchlist";
+import { Instrument } from "@/types/watchList";
+import { GET_AVAILABLE_INSTRUMENTS } from "@/graphql/mutations";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/redux/store";
+import { addToWatchlist } from "@/lib/redux/features/watchList/watchlistSlice";
+import { useApolloClient } from '@apollo/client';
 
-// TypeScript interfaces with strict null checks
-interface Instrument {
-  id: number;
-  symbol: string;
-  name: string;
-}
-
-interface WatchList {
-  id: number;
-  symbols: Instrument[];
-}
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface GetInstrumentsResponse {
-  availableInstruments: Instrument[];
-}
-
-interface GetWatchListResponse {
-  watchList: WatchList | null;
-}
-
-// GraphQL Queries with proper null handling
-const GET_INSTRUMENTS = gql`
-  query GetInstruments {
-    availableInstruments {
-      id
-      symbol
-      name
-    }
-  }
-`;
-
-const GET_WATCHLIST = gql`
-  query GetWatchList {
-    watchList {
-      id
-      symbols {
-        id
-        symbol
-        name
-      }
-    }
-  }
-`;
-
-const ADD_TO_WATCHLIST = gql`
-  mutation AddSingleToWatchList($input: WatchListInput!) {
-    addSingleToWatchList(input: $input) {
-      id
-      symbol
-      name
-    }
-  }
-`;
-
-const REMOVE_FROM_WATCHLIST = gql`
-  mutation RemoveFromWatchList($input: WatchListInput!) {
-    removeFromWatchList(input: $input) {
-      id
-      symbol
-      name
-    }
-  }
-`;
-
 const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
-  const { logout } = useAuth();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedStocks, setSelectedStocks] = useState<Set<number>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();  // Properly typed dispatch
+  const client = useApolloClient();
 
-  // Query for all instruments with proper error handling and skip option
+
+  // Get the current state of adding instruments
+  const isAddingInstrument = useSelector(
+    (state: RootState) => state.watchlist.isAddingInstrument
+  );
+
   const {
-    data: instrumentsData,
+    data,
     loading: instrumentsLoading,
     error: instrumentsError,
-    refetch: refetchInstruments
-  } = useQuery<GetInstrumentsResponse>(GET_INSTRUMENTS, {
-    skip: !isOpen, // Skip query when modal is closed
-    fetchPolicy: 'network-only',
-    onError: (error) => {
-      console.error("Instruments query error:", error);
-      setError("Failed to load instruments");
-      if (error.message.includes("Unauthorized")) {
-        logout();
-      }
-    },
-  });
+    refetch,
+  } = useQuery<{ availableInstruments: Instrument[] }>(
+    GET_AVAILABLE_INSTRUMENTS,
+    {
+      fetchPolicy: "network-only",
+      skip: !isOpen,
+      context: {
+        // Add any additional headers if needed
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+    }
+  }
+  );
 
-  // Query for watchlist with proper error handling and skip option
-  const {
-    data: watchlistData,
-    loading: watchlistLoading,
-    error: watchlistError,
-    refetch: refetchWatchlist
-  } = useQuery<GetWatchListResponse>(GET_WATCHLIST, {
-    skip: !isOpen, // Skip query when modal is closed
-    fetchPolicy: 'network-only',
-    onError: (error) => {
-      console.error("Watchlist query error:", error);
-      setError("Failed to load watchlist");
-      if (error.message.includes("Unauthorized")) {
-        logout();
-      }
-    },
-  });
-
-  // Mutations
-  const [addToWatchlist] = useMutation(ADD_TO_WATCHLIST, {
-    onError: (error) => {
-      console.error("Add to watchlist error:", error);
-      setError("Failed to add to watchlist");
-      if (error.message.includes("Unauthorized")) {
-        logout();
-      }
-    },
-  });
-
-  const [removeFromWatchlist] = useMutation(REMOVE_FROM_WATCHLIST, {
-    onError: (error) => {
-      console.error("Remove from watchlist error:", error);
-      setError("Failed to remove from watchlist");
-      if (error.message.includes("Unauthorized")) {
-        logout();
-      }
-    },
-  });
-
-  // Reset state when modal opens/closes
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      refetch();
       setSelectedStocks(new Set());
-      setSearchTerm("");
       setError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, refetch]);
 
-  // Initialize selected stocks from watchlist with proper null checks
-  useEffect(() => {
-    if (watchlistData?.watchList?.symbols) {
-      try {
-        const watchlistIds = new Set(
-          watchlistData.watchList.symbols
-            .filter((symbol): symbol is Instrument => 
-              symbol != null && typeof symbol.id === 'number'
-            )
-            .map(symbol => symbol.id)
-        );
-        setSelectedStocks(watchlistIds);
-      } catch (error) {
-        console.error("Error setting selected stocks:", error);
-        setError("Error initializing selected stocks");
+  const filteredInstruments = React.useMemo(() => {
+    if (!data?.availableInstruments) return [];
+
+    return data.availableInstruments.filter((instrument) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        instrument.symbol.toLowerCase().includes(searchLower) ||
+        instrument.name.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [data?.availableInstruments, searchTerm]);
+
+  const toggleStock = (instrumentId: number) => {
+    setSelectedStocks((prev) => {
+      const next = new Set(prev);
+      if (next.has(instrumentId)) {
+        next.delete(instrumentId);
+      } else {
+        next.add(instrumentId);
       }
-    }
-  }, [watchlistData]);
-
-  if (!isOpen) return null;
-
-  // Safely get watchlist symbols with null checks
-  const watchlistSymbols = watchlistData?.watchList?.symbols?.filter(
-    (symbol): symbol is Instrument => symbol != null
-  ) || [];
-
-  // Safely get instruments with null checks
-  const instruments = instrumentsData?.availableInstruments?.filter(
-    (instrument): instrument is Instrument => 
-      instrument != null && 
-      typeof instrument.id === 'number' &&
-      typeof instrument.symbol === 'string' &&
-      typeof instrument.name === 'string'
-  ) || [];
-
-  const isInWatchlist = (instrumentId: number): boolean => {
-    return selectedStocks.has(instrumentId);
-  };
-
-  const toggleStock = async (instrumentId: number) => {
-    try {
-      setSelectedStocks(prev => {
-        const newSelected = new Set(prev);
-        if (newSelected.has(instrumentId)) {
-          newSelected.delete(instrumentId);
-        } else {
-          newSelected.add(instrumentId);
-        }
-        return newSelected;
-      });
-    } catch (error) {
-      console.error("Error toggling stock:", error);
-      setError("Failed to toggle stock selection");
-    }
+      return next;
+    });
   };
 
   const handleDone = async () => {
+    if (selectedStocks.size === 0) return;
+
     setIsSubmitting(true);
     setError(null);
+
     try {
-      const currentWatchlistIds = new Set(
-        watchlistSymbols
-          .filter((symbol): symbol is Instrument => 
-            symbol != null && typeof symbol.id === 'number'
-          )
-          .map(symbol => symbol.id)
+      const selectedStocksArray = Array.from(selectedStocks);
+      const promises = selectedStocksArray.map((instrumentId) =>
+        dispatch(addToWatchlist(instrumentId)).unwrap()
       );
 
-      const stocksToAdd = Array.from(selectedStocks)
-        .filter(id => !currentWatchlistIds.has(id));
-      const stocksToRemove = Array.from(currentWatchlistIds)
-        .filter(id => !selectedStocks.has(id));
-
-      // Process additions
-      for (const instrumentId of stocksToAdd) {
-        await addToWatchlist({
-          variables: {
-            input: { instrumentId }
-          }
-        });
-      }
-
-      // Process removals
-      for (const instrumentId of stocksToRemove) {
-        await removeFromWatchlist({
-          variables: {
-            input: { instrumentId }
-          }
-        });
-      }
-
-      // Refetch data after updates
+      await Promise.all(promises);
+      
+      // Refetch available instruments and watchlist after adding
       await Promise.all([
-        refetchWatchlist(),
-        refetchInstruments()
+        refetch(),
+        client.refetchQueries({
+          include: ['GetWatchList'],
+        }),
       ]);
 
       onClose();
-    } catch (error) {
-      console.error("Error updating watchlist:", error);
-      setError("Failed to update watchlist");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to add stocks to watchlist"
+      );
+      // If unauthorized, handle the error
+      if (err instanceof Error && 
+          (err.message.includes('Unauthorized') || err.message.includes('jwt'))) {
+        // Handle unauthorized error
+        window.location.href = '/auth/signin';
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Filter instruments with null checks
-  const filteredInstruments = instruments.filter((instrument) => {
-    if (!instrument) return false;
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      instrument.symbol.toLowerCase().includes(searchLower) ||
-      instrument.name.toLowerCase().includes(searchLower)
-    );
-  });
+  if (!isOpen) return null;
 
-  // Show loading state while data is being fetched
-  if (instrumentsLoading || watchlistLoading) {
+  if (instrumentsLoading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl">
@@ -281,7 +139,9 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl">
         {/* Header */}
         <div className="relative mb-6">
-          <h2 className="text-center text-2xl font-bold text-gray-900">Add Stocks</h2>
+          <h2 className="text-center text-2xl font-bold text-gray-900">
+            Add Stocks
+          </h2>
           <button
             onClick={onClose}
             className="absolute right-0 top-0 rounded-full p-2 text-gray-500 hover:bg-gray-100"
@@ -292,7 +152,7 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             <p className="text-sm text-gray-600">
               Selected Stocks{" "}
               <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary">
-                {selectedStocks.size}/{instruments.length}
+                {selectedStocks.size}/{data?.availableInstruments.length || 0}
               </span>
             </p>
           </div>
@@ -300,7 +160,7 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-500">
+          <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-500">
             {error}
           </div>
         )}
@@ -321,12 +181,12 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
         {/* Instruments List */}
         <div className="custom-scrollbar max-h-[400px] space-y-2 overflow-y-auto rounded-lg bg-gray-50 p-4">
-          {instrumentsError || watchlistError ? (
-            <div className="text-center text-red-500">
-              Error loading data. Please try again.
+          {filteredInstruments.length === 0 ? (
+            <div className="text-center text-gray-500">
+              {searchTerm
+                ? "No matching instruments found"
+                : "No instruments available"}
             </div>
-          ) : filteredInstruments.length === 0 ? (
-            <div className="text-center text-gray-500">No instruments found</div>
           ) : (
             filteredInstruments.map((instrument) => (
               <div
@@ -340,19 +200,22 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{instrument.symbol}</p>
+                    <p className="font-semibold text-gray-900">
+                      {instrument.symbol}
+                    </p>
                     <p className="text-sm text-gray-500">{instrument.name}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => toggleStock(instrument.id)}
+                  disabled={isAddingInstrument[instrument.id]}
                   className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
-                    isInWatchlist(instrument.id)
+                    selectedStocks.has(instrument.id)
                       ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
                       : "border-2 border-gray-200 text-gray-400 hover:border-primary hover:text-primary"
-                  }`}
+                  } ${isAddingInstrument[instrument.id] ? "opacity-50" : ""}`}
                 >
-                  {isInWatchlist(instrument.id) ? (
+                  {selectedStocks.has(instrument.id) ? (
                     <Check className="h-5 w-5" />
                   ) : (
                     <Plus className="h-5 w-5" />
@@ -363,11 +226,10 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
         <div className="mt-6 flex justify-center">
           <button
             onClick={handleDone}
-            disabled={isSubmitting}
+            disabled={isSubmitting || selectedStocks.size === 0}
             className="rounded-lg bg-primary px-8 py-3 font-medium text-white shadow-lg shadow-primary/30 transition-all duration-200 hover:bg-primary/90 disabled:opacity-50"
           >
             {isSubmitting ? (

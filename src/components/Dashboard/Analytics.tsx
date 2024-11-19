@@ -12,9 +12,7 @@ import TableTwo from "../Tables/TableTwo";
 // without this the component renders on server and throws an error
 import dynamic from "next/dynamic";
 
-const MapTwo = dynamic(() => import("../Maps/MapTwo"), {
-  ssr: false,
-});
+
 
 const Analytics: React.FC = () => {
   useEffect(() => {
@@ -125,7 +123,6 @@ const Analytics: React.FC = () => {
         </div>
         <ChartFour />
         <DataStats />
-        <MapTwo />
         <div className="col-span-12 xl:col-span-6">
           {/* <!-- ====== Top Content Start --> */}
           <TopContent />

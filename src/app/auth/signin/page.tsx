@@ -1,13 +1,14 @@
 "use client";
 import React from "react";
-import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { LOGIN_MUTATION } from "@/graphql/mutations";
-import { client } from "@/utils/apolloClient";
 import Link from "next/link";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "@/lib/redux/features/auth/authThunks";
+import { AppDispatch, RootState } from "@/lib/redux/store";
+
 type LoginForm = {
   email: string;
   password: string;
@@ -15,6 +16,11 @@ type LoginForm = {
 
 const SignIn: React.FC = () => {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  
+  // Get auth state from Redux
+  const { loading, error } = useSelector((state: RootState) => state.auth);
+
   const {
     register,
     handleSubmit,
@@ -22,42 +28,27 @@ const SignIn: React.FC = () => {
     formState: { errors },
   } = useForm<LoginForm>();
 
-  const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (data) => {
-      const token = data.login.accessToken;
-      // Only use sessionStorage
-      sessionStorage.setItem("accessToken", token);
-
-      // Reset Apollo Client cache and redirect
-      client.resetStore().then(() => {
-        toast.success("Login successful");
-        router.replace("/");
-      });
-    },
-    onError: (error) => {
-      console.error("Login error:", error);
-      toast.error(error.message || "Invalid credentials");
-    },
-  });
-
   const onSubmit = async (formData: LoginForm) => {
     if (loading) return;
 
     try {
-      await login({
-        variables: {
-          input: {
-            email: formData.email,
-            password: formData.password,
-          },
-        },
-      });
-      reset();
+      const result = await dispatch(loginUser({
+        email: formData.email,
+        password: formData.password,
+      })).unwrap();
+
+      if (result) {
+        toast.success("Login successful");
+        reset();
+        router.replace("/");
+      }
     } catch (err) {
-      // Error is handled by onError callback
+      const errorMessage = err instanceof Error ? err.message : "Login failed";
+      toast.error(errorMessage);
       console.error("Form submission error:", err);
     }
   };
+
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex flex-wrap items-center">
@@ -72,8 +63,6 @@ const SignIn: React.FC = () => {
                 height={32}
               />
             </Link>
-
-          
           </div>
         </div>
 
@@ -92,10 +81,18 @@ const SignIn: React.FC = () => {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    {...register("email")}
+                    {...register("email", { 
+                      required: "Email is required",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Invalid email address"
+                      }
+                    })}
                     className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   />
-
+                  {errors.email && (
+                    <p className="mt-1 text-red-500">{errors.email.message}</p>
+                  )}
                   <span className="absolute right-4 top-4">
                     <svg
                       className="fill-current"
@@ -117,17 +114,25 @@ const SignIn: React.FC = () => {
               </div>
 
               <div className="mb-6">
-                <label className="mb-2.5 block font-medium text-black ">
+                <label className="mb-2.5 block font-medium text-black">
                   Password
                 </label>
                 <div className="relative">
                   <input
                     type="password"
-                    {...register("password")}
+                    {...register("password", {
+                      required: "Password is required",
+                      minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters"
+                      }
+                    })}
                     placeholder="Enter your password"
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10  outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
+                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
-
+                  {errors.password && (
+                    <p className="mt-1 text-red-500">{errors.password.message}</p>
+                  )}
                   <span className="absolute right-4 top-4">
                     <svg
                       className="fill-current"
@@ -155,19 +160,20 @@ const SignIn: React.FC = () => {
               <div className="mb-5">
                 <button
                   type="submit"
-                  value="Sign In"
-                  className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                  disabled={loading}
+                  className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90 disabled:opacity-70"
                 >
                   {loading ? "Signing In..." : "Sign In"}
                 </button>
               </div>
+              
               {error && (
-                <p className="mt-4 text-red-500">Error: {error.message}</p>
+                <p className="mt-4 text-red-500">Error: {error}</p>
               )}
 
               <div className="mt-6 text-center">
                 <p>
-                  Don’t have any account?{" "}
+                  Don't have any account?{" "}
                   <Link href="/auth/signup" className="text-primary">
                     Sign Up
                   </Link>

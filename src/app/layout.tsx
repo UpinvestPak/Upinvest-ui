@@ -1,5 +1,4 @@
-"use client";
-import "jsvectormap/dist/css/jsvectormap.css";
+'use client'
 import "flatpickr/dist/flatpickr.min.css";
 import "nouislider/dist/nouislider.css";
 import "dropzone/dist/dropzone.css";
@@ -9,11 +8,11 @@ import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { ApolloProvider } from "@apollo/client";
-import { client } from "@/utils/apolloClient";
-import { useAuthRedirect } from "@/hook/useAuthRedirect";
+import { client } from "@/lib/apollo/client";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { usePathname } from 'next/navigation';
+import { StoreProvider } from "@/lib/redux/provider";
 
-// Create a separate auth wrapper component
 const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const isProtectedRoute = !pathname?.includes('/auth/');
@@ -36,11 +35,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <ApolloProvider client={client}>
-          <AuthWrapper>
-            {loading ? <Loader /> : children}
-          </AuthWrapper>
-        </ApolloProvider>
+        <StoreProvider>
+          <ApolloProvider client={client}>
+            <AuthWrapper>
+              {loading ? <Loader /> : children}
+            </AuthWrapper>
+          </ApolloProvider>
+        </StoreProvider>
       </body>
     </html>
   );
