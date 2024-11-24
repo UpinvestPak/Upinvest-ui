@@ -3,20 +3,18 @@ import { Calendar } from "lucide-react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useDispatch, useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
-import 'react-datepicker/dist/react-datepicker.css';
+import "react-datepicker/dist/react-datepicker.css";
 
-import { 
-  GET_AVAILABLE_INSTRUMENTS 
-} from "@/graphql/mutations";
-import { 
-  TradeType, 
-  CommissionType, 
-  TradeModalProps, 
-  TradeFormData, 
+import { GET_AVAILABLE_INSTRUMENTS } from "@/graphql/mutations";
+import {
+  TradeType,
+  CommissionType,
+  TradeModalProps,
+  TradeFormData,
   FormErrors,
   TradeTypeButtonProps,
   CommissionTypeRadioProps,
-  Instrument 
+  Instrument,
 } from "@/types/buyModal";
 import { RootState } from "@/lib/redux/store";
 import { ADD_TRANSACTION, GET_USER_PORTFOLIO } from "@/graphql/portfolio";
@@ -24,19 +22,19 @@ import { ADD_TRANSACTION, GET_USER_PORTFOLIO } from "@/graphql/portfolio";
 // Validation utility
 const validateTradeForm = (formData: TradeFormData): FormErrors => {
   const errors: FormErrors = {};
-  
+
   if (!formData.symbol?.trim()) {
     errors.symbol = "Symbol is required";
   }
-  
+
   if (!formData.price || formData.price <= 0) {
     errors.price = "Price must be greater than 0";
   }
-  
+
   if (!formData.quantity || formData.quantity <= 0) {
     errors.quantity = "Quantity must be greater than 0";
   }
-  
+
   if (formData.commission < 0) {
     errors.commission = "Commission cannot be negative";
   }
@@ -54,7 +52,7 @@ const TradeTypeButton: React.FC<TradeTypeButtonProps> = ({
   type,
   selected,
   onClick,
-  disabled
+  disabled,
 }) => (
   <button
     type="button"
@@ -76,9 +74,11 @@ const CommissionTypeRadio: React.FC<CommissionTypeRadioProps> = ({
   label,
   selected,
   onChange,
-  disabled
+  disabled,
 }) => (
-  <label className={`flex items-center space-x-2 ${disabled ? "cursor-not-allowed opacity-50" : ""}`}>
+  <label
+    className={`flex items-center space-x-2 ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+  >
     <input
       type="radio"
       name="commissionType"
@@ -96,11 +96,13 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
   isOpen,
   onClose,
   portfolioId,
-  onTradeComplete
+  onTradeComplete,
 }) => {
   const dispatch = useDispatch();
-  const portfolio = useSelector((state: RootState) => state.portfolio.portfolio);
-  
+  const portfolio = useSelector(
+    (state: RootState) => state.portfolio.portfolio,
+  );
+
   // Form State
   const [formData, setFormData] = useState<TradeFormData>({
     symbol: "",
@@ -109,49 +111,55 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
     commission: 0,
     date: new Date().toISOString().split("T")[0],
     portfolioId,
-    tradeType: TradeType.LONG
+    tradeType: TradeType.LONG,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [commissionType, setCommissionType] = useState<CommissionType>(CommissionType.FIXED);
+  const [commissionType, setCommissionType] = useState<CommissionType>(
+    CommissionType.FIXED,
+  );
 
   // Apollo Queries and Mutations
-  const [addTransactionMutation, { error: mutationError }] = useMutation(ADD_TRANSACTION, {
-    refetchQueries: [{ query: GET_USER_PORTFOLIO }],
-    onCompleted: (data) => {
-      onTradeComplete?.(data.addTransaction);
-      onClose();
+  const [addTransactionMutation, { error: mutationError }] = useMutation(
+    ADD_TRANSACTION,
+    {
+      refetchQueries: [{ query: GET_USER_PORTFOLIO }],
+      onCompleted: (data) => {
+        onTradeComplete?.(data.addTransaction);
+        onClose();
+      },
+      onError: (error) => {
+        setErrors((prev) => ({
+          ...prev,
+          submit: error.message || "Failed to add transaction",
+        }));
+        setIsSubmitting(false);
+      },
     },
-    onError: (error) => {
-      setErrors(prev => ({
-        ...prev,
-        submit: error.message || 'Failed to add transaction'
-      }));
-      setIsSubmitting(false);
-    }
-  });
+  );
   const handleDateChange = (date: Date | null) => {
     if (date) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        date: date.toISOString().split("T")[0]
+        date: date.toISOString().split("T")[0],
       }));
     }
   };
-  const { data: instrumentsData, loading: instrumentsLoading, error: instrumentsError } = useQuery(
-    GET_AVAILABLE_INSTRUMENTS,
-    {
-      fetchPolicy: 'cache-and-network'
-    }
-  );
+  const {
+    data: instrumentsData,
+    loading: instrumentsLoading,
+    error: instrumentsError,
+  } = useQuery(GET_AVAILABLE_INSTRUMENTS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   // Effects
   useEffect(() => {
     if (portfolio?.id) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        portfolioId: portfolio.id
+        portfolioId: portfolio.id,
       }));
     }
   }, [portfolio?.id]);
@@ -166,7 +174,7 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
         commission: 0,
         date: new Date().toISOString().split("T")[0],
         portfolioId,
-        tradeType: TradeType.LONG
+        tradeType: TradeType.LONG,
       });
       setErrors({});
     }
@@ -193,12 +201,12 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
 
   // Event Handlers
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === "symbol" ? value : parseFloat(value) || 0
+      [name]: name === "symbol" ? value : parseFloat(value) || 0,
     }));
   };
 
@@ -224,11 +232,11 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
             price: formData.price,
             quantity: formData.quantity,
             portfolioId: formData.portfolioId,
-          }
-        }
+          },
+        },
       });
     } catch (error) {
-      console.error('Transaction error:', error);
+      console.error("Transaction error:", error);
     }
   };
 
@@ -247,30 +255,41 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
       <div className="absolute inset-0" onClick={onClose} />
-      
-      <form onSubmit={handleSubmit} className="relative max-h-[93vh] w-full max-w-2xl transform overflow-y-auto rounded-2xl bg-white shadow-xl">
+
+      <form
+        onSubmit={handleSubmit}
+        className="relative max-h-[93vh] w-full max-w-2xl transform overflow-y-auto rounded-2xl bg-white shadow-xl"
+      >
         <div className="px-6 py-6">
-          {/* Trade Type Selection */}
           <div className="space-y-6">
             <div>
               <h3 className="mb-2 text-lg font-medium">Trade Type</h3>
               <div className="flex gap-2">
                 <TradeTypeButton
-                 type={TradeType.LONG}
+                  type={TradeType.LONG}
                   selected={formData.tradeType === TradeType.LONG}
-                  onClick={() => setFormData(prev => ({ ...prev, tradeType: TradeType.LONG }))}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      tradeType: TradeType.LONG,
+                    }))
+                  }
                   disabled={isSubmitting}
                 />
                 <TradeTypeButton
-                   type={TradeType.SHORT}
-        selected={formData.tradeType === TradeType.SHORT}
-                  onClick={() => setFormData(prev => ({ ...prev, tradeType: TradeType.SHORT }))}
+                  type={TradeType.SHORT}
+                  selected={formData.tradeType === TradeType.SHORT}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      tradeType: TradeType.SHORT,
+                    }))
+                  }
                   disabled={isSubmitting}
                 />
               </div>
             </div>
 
-            {/* Symbol Selection */}
             <div>
               <h3 className="mb-3 text-lg font-medium">Symbol</h3>
               <select
@@ -283,44 +302,45 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
                 } bg-white p-3`}
               >
                 <option value="">Select an Instrument</option>
-                {instrumentsData?.availableInstruments.map((instrument: Instrument) => (
-                  <option key={instrument.id} value={instrument.symbol}>
-                    {instrument.symbol} - {instrument.name}
-                  </option>
-                ))}
+                {instrumentsData?.availableInstruments.map(
+                  (instrument: Instrument) => (
+                    <option key={instrument.id} value={instrument.symbol}>
+                      {instrument.symbol} - {instrument.name}
+                    </option>
+                  ),
+                )}
               </select>
               {errors.symbol && (
                 <p className="mt-1 text-sm text-red-500">{errors.symbol}</p>
               )}
             </div>
 
-            {/* Date Selection */}
             <div>
-      <h3 className="mb-3 text-lg font-medium">Date</h3>
-      <div className="relative">
-        <DatePicker
-          selected={new Date(formData.date)}
-          onChange={handleDateChange}
-          disabled={isSubmitting}
-          maxDate={new Date()}
-          dateFormat="yyyy-MM-dd"
-          className="w-full rounded-lg border-2 border-gray-200 p-3 pr-10"
-          wrapperClassName="w-full"
-          customInput={
-            <input
-              type="text"
-              name="date"
-              value={formData.date}
-              className="w-full rounded-lg border-2 border-gray-200 p-3 pr-10"
-            />
-          }
-        />
-        <Calendar className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-      </div>
-      {errors.date && (
-        <p className="mt-1 text-sm text-red-500">{errors.date}</p>
-      )}
-    </div>
+              <h3 className="mb-3 text-lg font-medium">Date</h3>
+              <div className="relative">
+                <DatePicker
+                  selected={new Date(formData.date)}
+                  onChange={handleDateChange}
+                  disabled={isSubmitting}
+                  maxDate={new Date()}
+                  dateFormat="yyyy-MM-dd"
+                  className="w-full rounded-lg border-2 border-gray-200 p-3 pr-10"
+                  wrapperClassName="w-full"
+                  customInput={
+                    <input
+                      type="text"
+                      name="date"
+                      value={formData.date}
+                      className="w-full rounded-lg border-2 border-gray-200 p-3 pr-10"
+                    />
+                  }
+                />
+                <Calendar className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              </div>
+              {errors.date && (
+                <p className="mt-1 text-sm text-red-500">{errors.date}</p>
+              )}
+            </div>
 
             {/* Price and Quantity */}
             <div className="grid grid-cols-2 gap-4">
@@ -361,7 +381,6 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
               </div>
             </div>
 
-            {/* Commission Type */}
             <div>
               <h3 className="text-lg font-medium">Commission Type</h3>
               <div className="mt-2 grid grid-cols-3 gap-4">
@@ -403,7 +422,9 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
                     step="0.01"
                   />
                   {errors.commission && (
-                    <p className="mt-1 text-sm text-red-500">{errors.commission}</p>
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.commission}
+                    </p>
                   )}
                 </div>
               )}
@@ -417,42 +438,43 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
               </div>
               <div>
                 <p className="text-sm text-gray-600">Commission</p>
-                <p className="text-sm font-medium">PKR {deduction.toFixed(2)}</p>
+                <p className="text-sm font-medium">
+                  PKR {deduction.toFixed(2)}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Cost</p>
-                <p className="text-sm font-medium">PKR {totalCost.toFixed(2)}</p>
+                <p className="text-sm font-medium">
+                  PKR {totalCost.toFixed(2)}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Price/Share</p>
-                <p className="text-sm font-medium">PKR {pricePerShare.toFixed(2)}</p>
+                <p className="text-sm font-medium">
+                  PKR {pricePerShare.toFixed(2)}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Error Messages */}
-    
-  
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-4 border-t border-gray-200 px-6 py-4">
-            <button
-              onClick={onClose}
-              className="w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-center font-medium"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full rounded-lg bg-primary px-4 py-3 text-center font-medium text-white disabled:opacity-50"
-            >
-              {isSubmitting ? "Adding Trade..." : "Add Trade"}
-            </button>
-          </div>
-        </form>
-      </div>
-   
+        <div className="grid grid-cols-2 gap-4 border-t border-gray-200 px-6 py-4">
+          <button
+            onClick={onClose}
+            className="w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-center font-medium"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full rounded-lg bg-primary px-4 py-3 text-center font-medium text-white disabled:opacity-50"
+          >
+            {isSubmitting ? "Adding Trade..." : "Add Trade"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
