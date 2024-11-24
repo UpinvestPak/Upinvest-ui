@@ -8,6 +8,7 @@ import PortfolioTable from "@/components/Portfolio/PortfolioTable";
 import SunburstChart from "@/components/Portfolio/SunburstChart ";
 import React from "react";
 import AddPortolio from "@/components/Portfolio/AddPortolio";
+import TempPortfolio from "@/components/Portfolio/TemPortflio";
 
 function Page() {
   return (
@@ -25,6 +26,7 @@ function Page() {
             </div>
           </div>
           <PortfolioTable />
+          <TempPortfolio/>
           <PayoutTable />
           <HistoryTrade />{" "}
         </div>

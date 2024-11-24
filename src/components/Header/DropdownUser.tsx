@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from "@/lib/redux/store";
+import {useRouter} from 'next/navigation'
+import { logoutUser } from "@/lib/redux/features/auth/authThunks";
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -33,6 +38,18 @@ const DropdownUser = () => {
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
   });
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      // Redirect to login page after successful logout
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Handle error (show notification, etc.)
+    }
+  };
+
 
   return (
     <div className="relative">
@@ -161,7 +178,7 @@ const DropdownUser = () => {
             </Link>
           </li>
         </ul>
-        <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+        <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={handleLogout}>
           <svg
             className="fill-current"
             width="22"

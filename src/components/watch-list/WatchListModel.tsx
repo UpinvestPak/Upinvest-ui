@@ -42,7 +42,6 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       fetchPolicy: "network-only",
       skip: !isOpen,
       context: {
-        // Add any additional headers if needed
         headers: {
           'Cache-Control': 'no-cache',
         }

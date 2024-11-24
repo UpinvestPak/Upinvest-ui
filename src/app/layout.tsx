@@ -35,11 +35,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
+
         <StoreProvider>
           <ApolloProvider client={client}>
+          <AuthWrapper>
+
               {loading ? <Loader /> : children}
+              </AuthWrapper>
+
           </ApolloProvider>
         </StoreProvider>
+
       </body>
     </html>
   );

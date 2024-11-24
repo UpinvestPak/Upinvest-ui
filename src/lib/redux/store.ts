@@ -1,12 +1,15 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import authReducer from './features/auth/authSlice';
 import watchlistReducer from './features/watchList/watchlistSlice';
+import portfolioReducer from './features/portoflio/portfolioSlice';
+
 
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     watchlist: watchlistReducer,
+    portfolio: portfolioReducer
 
     
   },

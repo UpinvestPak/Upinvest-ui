@@ -4,6 +4,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Plus, BarChart3, ArrowLeftRight, Coins, Settings, X } from "lucide-react";
 import { BuyTradeModal } from "../Modals/BuyTradeModal";
 import AddDividendModal from "../Modals/AddDividendModal";
+import { useQuery } from "@apollo/client";
+import { GET_USER_PORTFOLIO } from "@/graphql/portfolio";
+
 
 interface MenuItem {
   [x: string]: any;
@@ -23,6 +26,8 @@ const AddPortfolio = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const { data: portfolioData } = useQuery(GET_USER_PORTFOLIO);
+
 
   const menuItems: MenuItem[] = [
     {
@@ -154,8 +159,11 @@ const AddPortfolio = () => {
       <BuyTradeModal
         isOpen={buyModalOpen}
         onClose={() => setBuyModalOpen(false)}
+        portfolioId={portfolioData?.getUserPortfolio?.id}
 
-      />
+
+
+      /> 
       <AddDividendModal
       isOpen={dividendModalOpen}
       onClose={() => setDividendModalOpen(false)}

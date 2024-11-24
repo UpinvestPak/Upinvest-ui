@@ -11,7 +11,6 @@ export class WatchlistAPI {
       throw new Error('GraphQL endpoint URL is not configured');
     }
 
-    // Get the current auth token from Redux store
     const state = store.getState();
     const token = state.auth.accessToken;
 

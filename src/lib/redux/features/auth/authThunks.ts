@@ -43,7 +43,14 @@ const GET_ME_QUERY = gql`
     }
   }
 `;
-
+const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout {
+      success
+      message
+    }
+  }
+`;
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: LoginInput, { dispatch }) => {
@@ -110,6 +117,40 @@ export const fetchCurrentUser = createAsyncThunk(
       console.error('Failed to fetch current user:', error);
       dispatch(logout());
       throw error;
+    }
+  }
+);
+
+
+
+export const logoutUser = createAsyncThunk(
+  'auth/logout',
+  async (_, { dispatch, getState }) => {
+    try {
+      dispatch(setLoading(true));
+      
+      const state = getState() as { auth: { accessToken: string | null } };
+      if (!state.auth.accessToken) {
+        throw new Error('No active session');
+      }
+
+      const { data } = await client.mutate({
+        mutation: LOGOUT_MUTATION,
+      });
+
+      if (data.logout.success) {
+        dispatch(logout());
+        await client.clearStore();
+        return data.logout;
+      } else {
+        throw new Error(data.logout.message);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Logout failed';
+      dispatch(setError(errorMessage));
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
   }
 );
