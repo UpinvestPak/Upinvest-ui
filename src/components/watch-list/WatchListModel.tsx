@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/redux/store";
 import { addToWatchlist } from "@/lib/redux/features/watchList/watchlistThunks";
 
-// Types
 interface Instrument {
   id: number;
   symbol: string;
@@ -75,7 +74,7 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [error, setError] = useState<string | null>(null);
   
   const dispatch = useDispatch<AppDispatch>();
-  const { availableInstruments, status: instrumentsLoading } = useWatchlist();
+  const { availableInstruments } = useWatchlist();
   const isAddingInstrument = useSelector(
     (state: RootState) => state.watchlist.isAddingInstrument
   );
@@ -184,13 +183,7 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
         {/* Instruments List */}
         <div className="custom-scrollbar max-h-[400px] space-y-2 overflow-y-auto rounded-lg bg-gray-50 p-4">
-          {instrumentsLoading ? (
-            <LoadingSpinner />
-          ) : filteredInstruments.length === 0 ? (
-            <div className="text-center text-gray-500">
-              {searchTerm ? "No matching instruments found" : "No instruments available"}
-            </div>
-          ) : (
+          {
             filteredInstruments.map((instrument) => (
               <InstrumentItem
                 key={instrument.id}
@@ -199,7 +192,7 @@ const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                 isAdding={isAddingInstrument[instrument.id] ?? false}
                 onToggle={toggleStock}
               />
-            ))
+            )
           )}
         </div>
 
