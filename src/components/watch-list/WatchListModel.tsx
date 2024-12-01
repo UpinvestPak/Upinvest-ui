@@ -59,14 +59,12 @@ const InstrumentItem: React.FC<InstrumentItemProps> = ({
   </div>
 );
 
-// Loading Spinner Component
 const LoadingSpinner: React.FC = () => (
   <div className="flex items-center justify-center py-8">
     <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
   </div>
 );
 
-// Main Modal Component
 const WatchlistModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedStocks, setSelectedStocks] = useState<Set<number>>(new Set());
