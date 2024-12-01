@@ -15,6 +15,8 @@ import {
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState, store } from "../../store";
 import { DocumentNode, print } from "graphql";
+import Cookies from 'js-cookie';
+
 
 // Configuration
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_URL || "/graphql";
@@ -29,14 +31,11 @@ async function graphqlRequest<T>(
     throw new Error("GraphQL endpoint URL is not configured");
   }
 
-  const state = store.getState();
-  const token = state.auth.accessToken;
-
+ 
   const response = await fetch(GRAPHQL_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
     },
     credentials: "include",
     body: JSON.stringify({

@@ -1,133 +1,84 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { WatchlistAPI } from './watchlistAPI';
-import { WatchlistState  , Instrument} from '@/types/watchList';
+// watchlistSlice.ts
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+export interface Instrument {
+  id: number;
+  symbol: string;
+  name: string;
+}
+
+export interface WatchlistState {
+  instruments: Instrument[];
+  availableInstruments: Instrument[];
+  allInstruments: Instrument[];
+  status: 'idle' | 'loading' | 'failed';
+  error: string | null;
+  isAddingInstrument: { [key: number]: boolean };
+  isDeletingInstrument: { [key: number]: boolean };
+  isAuthenticated: boolean;
+  currentPortfolioId: number | null; 
+
+}
 
 const initialState: WatchlistState = {
   instruments: [],
+  availableInstruments: [],
+  allInstruments: [],
   status: 'idle',
   error: null,
   isAddingInstrument: {},
-  isDeletingInstrument: {}
+  isDeletingInstrument: {},
+  isAuthenticated: false,
+  currentPortfolioId: null, // Add this line
+
 };
 
-// Async Thunks
-export const fetchWatchlist = createAsyncThunk<
-  Instrument[],
-  void,
-  { rejectValue: string }
->('watchlist/fetchWatchlist', async (_, { rejectWithValue }) => {
-  try {
-    return await WatchlistAPI.getWatchlist();
-  } catch (error) {
-    return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch watchlist');
-  }
-});
-
-export const addToWatchlist = createAsyncThunk<
-  Instrument,
-  number,
-  { rejectValue: string }
->('watchlist/addInstrument', async (instrumentId, { rejectWithValue, getState }) => {
-  try {
-    return await WatchlistAPI.addInstrument(instrumentId);
-  } catch (error) {
-    return rejectWithValue(error instanceof Error ? error.message : 'Failed to add instrument');
-  }
-});
-
-
-
-export const removeFromWatchlist = createAsyncThunk<
-  { instrumentId: number; removed: Instrument },
-  number,
-  { rejectValue: string }
->('watchlist/removeInstrument', async (instrumentId, { rejectWithValue }) => {
-  try {
-    const removed = await WatchlistAPI.removeInstrument(instrumentId);
-    return { instrumentId, removed };
-  } catch (error) {
-    return rejectWithValue(error instanceof Error ? error.message : 'Failed to remove instrument');
-  }
-});
-
-// Slice
-const watchlistSlice = createSlice({
+export const watchlistSlice = createSlice({
   name: 'watchlist',
   initialState,
   reducers: {
-    clearError: (state) => {
-      state.error = null;
+    setWatchlist: (state, action: PayloadAction<Instrument[]>) => {
+      state.instruments = action.payload;
     },
-    resetStatus: (state) => {
-      state.status = 'idle';
-      state.error = null;
-      state.isAddingInstrument = {};
-      state.isDeletingInstrument = {};
+    setAvailableInstruments: (state, action: PayloadAction<Instrument[]>) => {
+      state.availableInstruments = action.payload;
     },
-    clearLoadingStates: (state) => {
-      state.isAddingInstrument = {};
-      state.isDeletingInstrument = {};
-    }
+    setAllInstruments: (state, action: PayloadAction<Instrument[]>) => {
+      state.allInstruments = action.payload;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.status = action.payload ? 'loading' : 'idle';
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+      state.status = action.payload ? 'failed' : 'idle';
+    },
+    setAddingInstrument: (state, action: PayloadAction<{ id: number; loading: boolean }>) => {
+      state.isAddingInstrument[action.payload.id] = action.payload.loading;
+    },
+    setDeletingInstrument: (state, action: PayloadAction<{ id: number; loading: boolean }>) => {
+      state.isDeletingInstrument[action.payload.id] = action.payload.loading;
+    },
+    setAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
+    setCurrentPortfolioId: (state, action: PayloadAction<number>) => {
+      state.currentPortfolioId = action.payload;
+    },
   },
-  extraReducers: (builder) => {
-    builder
-      // Fetch watchlist
-      .addCase(fetchWatchlist.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(fetchWatchlist.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.instruments = action.payload;
-        state.error = null;
-      })
-      .addCase(fetchWatchlist.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload ?? 'Failed to fetch watchlist';
-      })
-      
-      // Add single instrument
-      .addCase(addToWatchlist.pending, (state, action) => {
-        if (!state.isAddingInstrument[action.meta.arg]) {
-          state.isAddingInstrument[action.meta.arg] = true;
-          state.error = null;
-        }
-      })
-      .addCase(addToWatchlist.fulfilled, (state, action) => {
-        delete state.isAddingInstrument[action.meta.arg];
-        if (!state.instruments.some(inst => inst.id === action.payload.id)) {
-          state.instruments.push(action.payload);
-        }
-        state.error = null;
-      })
-      .addCase(addToWatchlist.rejected, (state, action) => {
-        delete state.isAddingInstrument[action.meta.arg];
-        state.error = action.payload ?? 'Failed to add instrument';
-      })
-      
-      // Add batch instruments
-  
-      
-      // Remove instrument
-      .addCase(removeFromWatchlist.pending, (state, action) => {
-        if (!state.isDeletingInstrument[action.meta.arg]) {
-          state.isDeletingInstrument[action.meta.arg] = true;
-          state.error = null;
-        }
-      })
-      .addCase(removeFromWatchlist.fulfilled, (state, action) => {
-        delete state.isDeletingInstrument[action.meta.arg];
-        state.instruments = state.instruments.filter(
-          instrument => instrument.id !== action.payload.instrumentId
-        );
-        state.error = null;
-      })
-      .addCase(removeFromWatchlist.rejected, (state, action) => {
-        delete state.isDeletingInstrument[action.meta.arg];
-        state.error = action.payload ?? 'Failed to remove instrument';
-      });
-  }
 });
 
-export const { clearError, resetStatus, clearLoadingStates } = watchlistSlice.actions;
-export default watchlistSlice.reducer
+export const {
+  setWatchlist,
+  setAvailableInstruments,
+  setAllInstruments,
+  setLoading,
+  setError,
+  setAddingInstrument,
+  setDeletingInstrument,
+  setAuthenticated,
+  setCurrentPortfolioId, // Add this line
+
+} = watchlistSlice.actions;
+
+export default watchlistSlice.reducer;

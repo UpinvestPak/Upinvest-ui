@@ -53,8 +53,11 @@ export interface Portfolio {
 export interface TradeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  portfolioId: number; // Added portfolioId as it's required for transactions
+  portfolioId: number;
   onTradeComplete?: (transaction: Transaction) => void;
+  preSelectedSymbol?: string;
+  preSelectedName?: string;
+
 }
 
 export interface TradeTypeButtonProps {
@@ -81,6 +84,7 @@ export interface TradeFormData {
   date: string;
   portfolioId: number;
   tradeType: TradeType;
+  
 }
 
 export interface FormErrors {

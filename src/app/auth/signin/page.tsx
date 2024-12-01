@@ -8,6 +8,8 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/lib/redux/features/auth/authThunks";
 import { AppDispatch, RootState } from "@/lib/redux/store";
+import Cookies from 'js-cookie';
+
 
 type LoginForm = {
   email: string;
@@ -28,26 +30,33 @@ const SignIn: React.FC = () => {
     formState: { errors },
   } = useForm<LoginForm>();
 
-  const onSubmit = async (formData: LoginForm) => {
-    if (loading) return;
+// SignIn.tsx
+const onSubmit = async (formData: LoginForm) => {
+  if (loading) return;
+  try {
+    const result = await dispatch(loginUser({
+      email: formData.email,
+      password: formData.password,
+    })).unwrap();
 
-    try {
-      const result = await dispatch(loginUser({
-        email: formData.email,
-        password: formData.password,
-      })).unwrap();
+    // Debug logging
+    console.log('Login response:', result);
+    console.log('Cookies after login:', document.cookie);
+    console.log('Access token:', Cookies.get('access_token'));
 
-      if (result) {
-        toast.success("Login successful");
-        reset();
+    if (result) {
+      toast.success("Login successful");
+      
+      // Add delay before redirect to ensure cookie is set
+      setTimeout(() => {
         router.replace("/");
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Login failed";
-      toast.error(errorMessage);
-      console.error("Form submission error:", err);
+      }, 100);
     }
-  };
+  } catch (err) {
+    console.error('Login error:', err);
+    toast.error(err instanceof Error ? err.message : 'Login failed');
+  }
+};
 
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

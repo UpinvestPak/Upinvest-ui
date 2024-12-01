@@ -3,9 +3,7 @@ import { AuthState, AuthResponse, User } from '@/types/auth';
 
 const initialState: AuthState = {
   user: null,
-  accessToken: typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null,
-  refreshToken: typeof window !== 'undefined' ? sessionStorage.getItem('refreshToken') : null,
-  isAuthenticated: typeof window !== 'undefined' ? !!sessionStorage.getItem('accessToken') : false,
+  isAuthenticated: false,
   loading: false,
   error: null,
 };
@@ -15,17 +13,10 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<AuthResponse>) => {
-      const { id, name, role, accessToken, refreshToken } = action.payload;
+      const { id, name, role } = action.payload;
       state.user = { id, name, role };
-      state.accessToken = accessToken;
-      state.refreshToken = refreshToken;
       state.isAuthenticated = true;
       state.error = null;
-      
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('accessToken', accessToken);
-        sessionStorage.setItem('refreshToken', refreshToken);
-      }
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
@@ -38,15 +29,8 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = null;
-      state.accessToken = null;
-      state.refreshToken = null;
       state.isAuthenticated = false;
       state.error = null;
-      
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
-      }
     },
   },
 });

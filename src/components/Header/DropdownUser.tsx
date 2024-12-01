@@ -43,7 +43,7 @@ const DropdownUser = () => {
     try {
       await dispatch(logoutUser()).unwrap();
       // Redirect to login page after successful logout
-      router.push('/login');
+      router.push('/auth/signin');
     } catch (error) {
       console.error('Logout failed:', error);
       // Handle error (show notification, etc.)

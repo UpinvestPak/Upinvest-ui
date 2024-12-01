@@ -4,6 +4,8 @@ import type { ColumnsType } from 'antd/es/table';
 import useMedia from 'use-media';
 import { useWatchlist } from '@/hooks/useWatchlist';
 import WatchlistActionMenu from './watchListActionMenu';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
 
 interface WatchListSymbol {
   id: number;
@@ -12,7 +14,7 @@ interface WatchListSymbol {
 }
 
 interface MarketData {
-  id: number;  // Added this for proper identification
+  id: number;  
   icon: string;
   name: string;
   company: string;
@@ -34,16 +36,12 @@ const WatchListTable: React.FC = () => {
   const [tableData, setTableData] = useState<MarketData[]>([]);
 
   const { 
-    instruments, 
-    status, 
+    instruments,
     error, 
-    loadWatchlist,
     removeInstrument
   } = useWatchlist();
 
-  useEffect(() => {
-    loadWatchlist();
-  }, [loadWatchlist]);
+  
 
   const handleRemoveFromWatchlist = (instrumentId: number) => {
     removeInstrument(instrumentId);
@@ -53,6 +51,8 @@ const WatchListTable: React.FC = () => {
     // TODO: Implement portfolio addition logic
     console.log('Add to portfolio:', instrumentId);
   };
+  const portfolioId = useSelector((state: RootState) => state.watchlist.currentPortfolioId);
+
 
   useEffect(() => {
     if (instruments) {
@@ -211,11 +211,15 @@ const WatchListTable: React.FC = () => {
       responsive: ["md"],
       render: (_, record) => (
         <div className="flex justify-center">
-          <WatchlistActionMenu
-            instrumentId={record.id}
-            onRemove={handleRemoveFromWatchlist}
-            onAddToPortfolio={handleAddToPortfolio}
-          />
+           <WatchlistActionMenu
+        instrumentId={record.id}
+        onRemove={handleRemoveFromWatchlist}
+        onAddToPortfolio={handleAddToPortfolio}
+        symbol={record.company}  
+        name={record.name}      
+        portfolioId={portfolioId as number}
+
+      />
         </div>
       ),
     },

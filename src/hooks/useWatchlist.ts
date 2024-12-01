@@ -1,56 +1,46 @@
-import { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+// src/lib/redux/features/watchlist/hooks.ts
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { RootState } from '@/lib/redux/store';
 import {
   fetchWatchlist,
+  fetchAvailableInstruments,
+  fetchAllInstruments,
   addToWatchlist,
   removeFromWatchlist,
-  clearError,
-  resetStatus
-} from '../lib/redux/features/watchList/watchlistSlice';
-import { AppDispatch , RootState} from '@/lib/redux/store';
+} from '@/lib/redux/features/watchList/watchlistThunks';
 
 export const useWatchlist = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const {
+  const dispatch = useAppDispatch();
+  const { 
     instruments,
-    status,
-    error,
-    isAddingInstrument,
-    isDeletingInstrument
-  } = useSelector((state: RootState) => state.watchlist);
-
-  const loadWatchlist = useCallback(() => {
-    return dispatch(fetchWatchlist());
+    availableInstruments,
+    allInstruments,
+status,
+    error 
+  } = useAppSelector((state: RootState) => state.watchlist);
+  
+  useEffect(() => {
+    dispatch(fetchWatchlist());
+    dispatch(fetchAvailableInstruments());
+    dispatch(fetchAllInstruments());
   }, [dispatch]);
 
-  const addInstrument = useCallback((instrumentId: number) => {
-    return dispatch(addToWatchlist(instrumentId));
-  }, [dispatch]);
+  const addInstruments = async (instrumentIds: number[]) => {
+    await dispatch(addToWatchlist(instrumentIds));
+  };
 
-
-
-  const removeInstrument = useCallback((instrumentId: number) => {
-    return dispatch(removeFromWatchlist(instrumentId));
-  }, [dispatch]);
-
-  const handleClearError = useCallback(() => {
-    dispatch(clearError());
-  }, [dispatch]);
-
-  const handleResetStatus = useCallback(() => {
-    dispatch(resetStatus());
-  }, [dispatch]);
+  const removeInstrument = async (instrumentId: number) => {
+    await dispatch(removeFromWatchlist(instrumentId));
+  };
 
   return {
-    instruments,
+    instruments, 
+    availableInstruments,
+    allInstruments,
     status,
     error,
-    isAddingInstrument,
-    isDeletingInstrument,
-    loadWatchlist,
-    addInstrument,
+    addInstruments,
     removeInstrument,
-    clearError: handleClearError,
-    resetStatus: handleResetStatus
   };
 };

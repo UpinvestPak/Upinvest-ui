@@ -7,6 +7,7 @@ export enum Role {
     id: number;
     name?: string;
     role: Role;
+    token?: string;
   }
   
   export interface LoginInput {
@@ -22,16 +23,14 @@ export enum Role {
     id: number;
     name?: string;
     role: Role;
-    accessToken: string;
-    refreshToken: string;
+    user:any;
   }
   
   export interface AuthState {
     user: User | null;
-    accessToken: string | null;
-    refreshToken: string | null;
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
+
   }
   

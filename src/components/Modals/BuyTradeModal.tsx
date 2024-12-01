@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { GET_AVAILABLE_INSTRUMENTS } from "@/graphql/mutations";
+import { GET_ALL_INSTRUMENTS } from "@/graphql/mutations";
 import {
   TradeType,
   CommissionType,
@@ -19,7 +19,6 @@ import {
 import { RootState } from "@/lib/redux/store";
 import { ADD_TRANSACTION, GET_USER_PORTFOLIO } from "@/graphql/portfolio";
 
-// Validation utility
 const validateTradeForm = (formData: TradeFormData): FormErrors => {
   const errors: FormErrors = {};
 
@@ -47,7 +46,6 @@ const validateTradeForm = (formData: TradeFormData): FormErrors => {
   return errors;
 };
 
-// Trade Type Button Component
 const TradeTypeButton: React.FC<TradeTypeButtonProps> = ({
   type,
   selected,
@@ -68,7 +66,6 @@ const TradeTypeButton: React.FC<TradeTypeButtonProps> = ({
   </button>
 );
 
-// Commission Type Radio Component
 const CommissionTypeRadio: React.FC<CommissionTypeRadioProps> = ({
   value,
   label,
@@ -97,30 +94,30 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
   onClose,
   portfolioId,
   onTradeComplete,
+  preSelectedSymbol,
+  preSelectedName,
 }) => {
   const dispatch = useDispatch();
   const portfolio = useSelector(
     (state: RootState) => state.portfolio.portfolio,
   );
-
-  // Form State
-  const [formData, setFormData] = useState<TradeFormData>({
-    symbol: "",
+  const initialFormState = {
+    symbol: preSelectedSymbol || "",
     price: 0,
     quantity: 0,
     commission: 0,
     date: new Date().toISOString().split("T")[0],
     portfolioId,
     tradeType: TradeType.LONG,
-  });
+  };
 
+  const [formData, setFormData] = useState<TradeFormData>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [commissionType, setCommissionType] = useState<CommissionType>(
     CommissionType.FIXED,
   );
 
-  // Apollo Queries and Mutations
   const [addTransactionMutation, { error: mutationError }] = useMutation(
     ADD_TRANSACTION,
     {
@@ -150,35 +147,68 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
     data: instrumentsData,
     loading: instrumentsLoading,
     error: instrumentsError,
-  } = useQuery(GET_AVAILABLE_INSTRUMENTS, {
+  } = useQuery(GET_ALL_INSTRUMENTS, {
     fetchPolicy: "cache-and-network",
+    onCompleted: (data) => {
+      console.log("Complete Data Structure:", data);
+      console.log("All Instruments Data:", JSON.stringify(data, null, 2));
+      console.log("Total Instruments Count:", data.allInstruments?.length);
+    },
+    onError: (error) => {
+      console.error("Detailed Error Fetching Instruments:", error);
+      console.error("Error Message:", error.message);
+      console.error("Error Details:", JSON.stringify(error, null, 2));
+    },
   });
 
-  // Effects
-  useEffect(() => {
-    if (portfolio?.id) {
-      setFormData((prev) => ({
-        ...prev,
-        portfolioId: portfolio.id,
-      }));
-    }
-  }, [portfolio?.id]);
+  // Optional: Log data and loading states on each render
+  console.log("Instruments Loading:", instrumentsLoading);
+  console.log("Instruments Data:", instrumentsData);
+  console.log("Instruments Error:", instrumentsError);
 
   useEffect(() => {
-    if (!isOpen) {
-      // Reset form when modal closes
-      setFormData({
-        symbol: "",
-        price: 0,
-        quantity: 0,
-        commission: 0,
-        date: new Date().toISOString().split("T")[0],
-        portfolioId,
-        tradeType: TradeType.LONG,
-      });
-      setErrors({});
+    if (isOpen && preSelectedSymbol && instrumentsData?.GetAllInstruments) {
+      console.log(
+        "Available instruments detailed:",
+        instrumentsData.GetAllInstruments.map((i: { symbol: string }) => ({
+          symbol: i.symbol,
+          trimmedSymbol: i.symbol.trim().toUpperCase(),
+          preSelected: preSelectedSymbol.trim().toUpperCase(),
+        })),
+      );
+
+      const matchingInstrument = instrumentsData.GetAllInstruments.find(
+        (instrument: Instrument) => {
+          const normalizedSymbol = instrument.symbol.trim().toUpperCase();
+          const normalizedPreSelected = preSelectedSymbol.trim().toUpperCase();
+          console.log(
+            `Comparing: ${normalizedSymbol} with ${normalizedPreSelected}`,
+          );
+          return normalizedSymbol === normalizedPreSelected;
+        },
+      );
+
+      if (matchingInstrument) {
+        console.log("Found matching instrument:", matchingInstrument);
+        setFormData((prev) => ({
+          ...prev,
+          symbol: matchingInstrument.symbol,
+        }));
+      } else {
+        console.log("No matching instrument found for:", preSelectedSymbol);
+      }
     }
-  }, [isOpen, portfolioId]);
+  }, [isOpen, preSelectedSymbol, instrumentsData]);
+
+  // Reset form on close
+  useEffect(() => {
+    if (isOpen) {
+      setFormData((prev) => ({
+        ...initialFormState,
+        symbol: preSelectedSymbol || "",
+      }));
+    }
+  }, [isOpen, preSelectedSymbol]);
 
   // Calculations
   const calculateDeduction = useCallback((): number => {
@@ -204,10 +234,16 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "symbol" ? value : parseFloat(value) || 0,
-    }));
+    console.log(`Handling input change: ${name} = ${value}`);
+
+    setFormData((prev) => {
+      const newData = {
+        ...prev,
+        [name]: name === "symbol" ? value : parseFloat(value) || 0,
+      };
+      console.log("Updated form data:", newData);
+      return newData;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -251,7 +287,40 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
       </div>
     );
   }
-
+  const renderSymbolSelect = () => {
+    if (instrumentsLoading) {
+      return <div>Loading instruments...</div>;
+    }
+    console.log("Full Instruments Data:", instrumentsData);
+    console.log(
+      "Instruments Path:",
+      instrumentsData?.allInstruments || instrumentsData?.GetAllInstruments,
+    );
+    return (
+      <div>
+        <h3 className="mb-3 text-lg font-medium">Symbol</h3>
+        <select
+          name="symbol"
+          value={formData.symbol} // This should match exactly with the option value
+          onChange={handleInputChange}
+          disabled={isSubmitting}
+          className={`w-full rounded-lg border-2 ${
+            errors.symbol ? "border-red-500" : "border-gray-200"
+          } bg-white p-3`}
+        >
+          <option value="">Select an Instrument</option>
+          {instrumentsData?.allInstruments?.map((instrument: Instrument) => (
+            <option key={instrument.id} value={instrument.symbol}>
+              {`${instrument.symbol} - ${instrument.name}`}
+            </option>
+          ))}
+        </select>
+        {errors.symbol && (
+          <p className="mt-1 text-sm text-red-500">{errors.symbol}</p>
+        )}
+      </div>
+    );
+  };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50">
       <div className="absolute inset-0" onClick={onClose} />
@@ -290,30 +359,7 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
               </div>
             </div>
 
-            <div>
-              <h3 className="mb-3 text-lg font-medium">Symbol</h3>
-              <select
-                name="symbol"
-                value={formData.symbol}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                className={`w-full rounded-lg border-2 ${
-                  errors.symbol ? "border-red-500" : "border-gray-200"
-                } bg-white p-3`}
-              >
-                <option value="">Select an Instrument</option>
-                {instrumentsData?.availableInstruments.map(
-                  (instrument: Instrument) => (
-                    <option key={instrument.id} value={instrument.symbol}>
-                      {instrument.symbol} - {instrument.name}
-                    </option>
-                  ),
-                )}
-              </select>
-              {errors.symbol && (
-                <p className="mt-1 text-sm text-red-500">{errors.symbol}</p>
-              )}
-            </div>
+            {renderSymbolSelect()}
 
             <div>
               <h3 className="mb-3 text-lg font-medium">Date</h3>

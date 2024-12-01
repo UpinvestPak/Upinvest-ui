@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { gql } from '@apollo/client';
-import { client } from '@/lib/apollo/client';
 import { 
   setCredentials, 
   setLoading, 
@@ -9,6 +8,9 @@ import {
   setUser
 } from './authSlice';
 import { LoginInput, RegisterInput, AuthResponse } from '@/types/auth';
+import client from '@/lib/apollo/client';
+import Cookies from 'js-cookie';
+
 
 const LOGIN_MUTATION = gql`
   mutation Login($input: LoginInput!) {
@@ -16,8 +18,7 @@ const LOGIN_MUTATION = gql`
       id
       name
       role
-      accessToken
-      refreshToken
+      # Remove token fields since they're handled by cookies
     }
   }
 `;
@@ -28,8 +29,7 @@ const REGISTER_MUTATION = gql`
       id
       name
       role
-      accessToken
-      refreshToken
+      # Remove token fields since they're handled by cookies
     }
   }
 `;
@@ -43,6 +43,7 @@ const GET_ME_QUERY = gql`
     }
   }
 `;
+
 const LOGOUT_MUTATION = gql`
   mutation Logout {
     logout {
@@ -51,6 +52,7 @@ const LOGOUT_MUTATION = gql`
     }
   }
 `;
+
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: LoginInput, { dispatch }) => {
@@ -60,11 +62,14 @@ export const loginUser = createAsyncThunk(
       const { data } = await client.mutate({
         mutation: LOGIN_MUTATION,
         variables: { input: credentials },
+        context: {
+          credentials: 'include'
+        }
       });
-      
+
       const authResponse: AuthResponse = data.login;
       dispatch(setCredentials(authResponse));
-      
+  
       return authResponse;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
@@ -85,6 +90,9 @@ export const registerUser = createAsyncThunk(
       const { data } = await client.mutate({
         mutation: REGISTER_MUTATION,
         variables: { input: registerData },
+        context: {
+          credentials: 'include'
+        }
       });
       
       const authResponse: AuthResponse = data.register;
@@ -103,15 +111,22 @@ export const registerUser = createAsyncThunk(
 
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
-  async (_, { dispatch, getState }) => {
+  async (_, { dispatch }) => {
     try {
       const { data } = await client.query({
         query: GET_ME_QUERY,
+        context: {
+          credentials: 'include'
+        },
+        errorPolicy: 'all' 
       });
-      
+     
       if (data.me) {
         dispatch(setUser(data.me));
         return data.me;
+      } else {
+        dispatch(logout());
+        throw new Error('No user found');
       }
     } catch (error) {
       console.error('Failed to fetch current user:', error);
@@ -121,21 +136,17 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
-
-
 export const logoutUser = createAsyncThunk(
   'auth/logout',
-  async (_, { dispatch, getState }) => {
+  async (_, { dispatch }) => {
     try {
       dispatch(setLoading(true));
-      
-      const state = getState() as { auth: { accessToken: string | null } };
-      if (!state.auth.accessToken) {
-        throw new Error('No active session');
-      }
 
       const { data } = await client.mutate({
         mutation: LOGOUT_MUTATION,
+        context: {
+          credentials: 'include'
+        }
       });
 
       if (data.logout.success) {
