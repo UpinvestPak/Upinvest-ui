@@ -1,11 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, AuthResponse, User } from '@/types/auth';
 
+
+interface PendingRegistration {
+  email: string;
+  message: string;
+}
+
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   loading: false,
   error: null,
+  pendingRegistration: null
+
+  
 };
 
 const authSlice = createSlice({
@@ -17,12 +26,17 @@ const authSlice = createSlice({
       state.user = { id, name, role };
       state.isAuthenticated = true;
       state.error = null;
+      state.pendingRegistration = null; 
+
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
+    },
+    setPendingRegistration: (state, action: PayloadAction<PendingRegistration>) => {
+      state.pendingRegistration = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
@@ -31,6 +45,8 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
+      state.pendingRegistration = null;
+
     },
   },
 });
@@ -41,6 +57,7 @@ export const {
   setLoading,
   setError,
   logout,
+  setPendingRegistration
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -52,7 +52,7 @@ interface Portfolio {
   dividends?: Dividend[];
 }
 
-const TempPortfolio = () => {
+const Tempdividend = () => {
   const isLargeScreen = useMedia({ minWidth: 1024 });
   const dispatch = useDispatch<AppDispatch>();
   const portfolio = useSelector(selectPortfolio);
@@ -98,32 +98,20 @@ const TempPortfolio = () => {
 
   const columns: ColumnsType<TransactionDisplay> = [
     {
-      title: "Symbol",
+      title: "date",
       dataIndex: "symbol",
       key: "symbol",
       width: isLargeScreen ? 200 : 158,
       sorter: (a, b) => a.symbol.localeCompare(b.symbol),
       render: (text, record) => (
         <div className="flex items-start space-x-1 text-start">
-          <img
-            src={record.icon}
-            alt={record.symbol}
-            className="h-8 w-7 rounded-full md:h-10 md:w-9"
-          />
-          <div className="flex flex-col">
-            <p className="text-xs font-medium leading-tight text-black md:text-base">
-              {record.symbol}
-            </p>
-            <p className="whitespace-break-spaces text-[10px] leading-tight text-gray-500 md:text-xs">
-              {record.company}
-            </p>
-          </div>
+         2024-12-09
         </div>
       ),
     },
    
     {
-      title: "Gross dividend",
+      title: "No of Shares",
       dataIndex: "price",
       key: "price",
       width: isLargeScreen ? 120 : 100,
@@ -135,7 +123,7 @@ const TempPortfolio = () => {
       ),
     },
     {
-      title: "Tax Amount",
+      title: "Dividend per share",
       dataIndex: "quantity",
       key: "quantity",
       width: isLargeScreen ? 120 : 100,
@@ -148,7 +136,7 @@ const TempPortfolio = () => {
     },
   
     {
-      title: "Net Dividends",
+      title: "Dividend per share",
       dataIndex: "dividendInfo",
       key: "dividends",
       width: isLargeScreen ? 120 : 100,
@@ -159,6 +147,42 @@ const TempPortfolio = () => {
         </p>
       ),
     },
+    {
+        title: "gross dividend",
+        dataIndex: "dividendInfo",
+        key: "dividends",
+        width: isLargeScreen ? 120 : 100,
+        sorter: (a, b) => (a.dividendInfo?.totalDividends || 0) - (b.dividendInfo?.totalDividends || 0),
+        render: (info) => (
+          <p className="text-start text-base text-black">
+            345.09
+          </p>
+        ),
+      },
+      {
+        title: "Net dividend",
+        dataIndex: "dividendInfo",
+        key: "dividends",
+        width: isLargeScreen ? 120 : 100,
+        sorter: (a, b) => (a.dividendInfo?.totalDividends || 0) - (b.dividendInfo?.totalDividends || 0),
+        render: (info) => (
+          <p className="text-start text-base text-black">
+            345.09
+          </p>
+        ),
+      },
+      {
+        title: "Tax deducted",
+        dataIndex: "dividendInfo",
+        key: "dividends",
+        width: isLargeScreen ? 120 : 100,
+        sorter: (a, b) => (a.dividendInfo?.totalDividends || 0) - (b.dividendInfo?.totalDividends || 0),
+        render: (info) => (
+          <p className="text-start text-base text-black">
+            345.09
+          </p>
+        ),
+      },
     {
       title: "",
       key: "action",
@@ -196,4 +220,4 @@ const TempPortfolio = () => {
   );
 };
 
-export default TempPortfolio;
+export default Tempdividend;

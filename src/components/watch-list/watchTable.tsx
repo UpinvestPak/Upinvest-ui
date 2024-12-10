@@ -101,7 +101,7 @@ const WatchListTable: React.FC = () => {
       ),
     },
     {
-      title: 'Price(pkr)',
+      title: 'Price',
       dataIndex: 'buyPrice',
       key: 'buyPrice',
       sorter: (a, b) => a.buyPrice - b.buyPrice,
@@ -122,7 +122,7 @@ const WatchListTable: React.FC = () => {
       ),
     },
     {
-      title: 'YTD Change',
+      title: 'YTD ',
       dataIndex: 'ytdChange',
       key: 'ytdChange',
       responsive: ['md'],
@@ -134,7 +134,7 @@ const WatchListTable: React.FC = () => {
       ),
     },
     {
-      title: '1-Year Change',
+      title: '1Year',
       dataIndex: 'oneYearChange',
       key: 'oneYearChange',
       responsive: ['md'],

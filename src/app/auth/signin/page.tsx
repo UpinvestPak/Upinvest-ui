@@ -40,9 +40,7 @@ const onSubmit = async (formData: LoginForm) => {
     })).unwrap();
 
     // Debug logging
-    console.log('Login response:', result);
-    console.log('Cookies after login:', document.cookie);
-    console.log('Access token:', Cookies.get('access_token'));
+ 
 
     if (result) {
       toast.success("Login successful");
@@ -53,7 +51,6 @@ const onSubmit = async (formData: LoginForm) => {
       }, 100);
     }
   } catch (err) {
-    console.error('Login error:', err);
     toast.error(err instanceof Error ? err.message : 'Login failed');
   }
 };

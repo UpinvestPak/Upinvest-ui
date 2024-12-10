@@ -1,138 +1,103 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
-import sunburst from "highcharts/modules/sunburst";
+import React, { useEffect } from 'react';
+import Highcharts from 'highcharts';
 
-sunburst(Highcharts);
+interface DataPoint {
+  name: string;
+  y: number;
+  sliced?: boolean;
+  selected?: boolean;
+}
 
-const SunburstChart = () => {
-  const [isClient, setIsClient] = useState(false);
+interface ChartProps {
+  className?: string;
+}
+
+const EggYolkChart: React.FC<ChartProps> = ({ className }) => {
   useEffect(() => {
-    setIsClient(true);
+    // @ts-ignore
+    Highcharts.chart('chart-container', {
+      chart: {
+        type: 'pie'
+      },
+      title: {
+        text: ''
+      },
+      tooltip: {
+        valueSuffix: '%'
+      },
+      credits: {
+        enabled: false, // Remove Highcharts logo
+      },
+  
+      plotOptions: {
+        series: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: [{
+            enabled: true,
+            distance: 20
+          }, {
+            enabled: true,
+            distance: -40,
+            format: '{point.percentage:.1f}%',
+            style: {
+              fontSize: '1.2em',
+              textOutline: 'none',
+              opacity: 0.7
+            },
+            filter: {
+              operator: '>',
+              property: 'percentage',
+              value: 10
+            }
+          }]
+        }
+      },
+      series: [{
+        name: 'Percentage',
+        colorByPoint: true,
+        data: [
+          { name: 'Meezan', y: 25.02, color: '#387ED1' }, // Primary color
+          { name: 'HBL', y: 26.71, sliced: true, selected: true, color: '#65AADD' }, // Lighter variant
+          { name: 'MARI', y: 10.09, color: '#A4C8E4' }, // Even lighter variant
+          { name: 'UBL', y: 15.5, color: '#D1E4F2' }, // Softest shade
+          { name: 'BEE', y: 12.68, color: '#87BDF3' }, // Intermediate shade
+        ] as unknown as DataPoint[],
+      }]
+    });
   }, []);
 
-  const data = [
-    { id: "0.0", parent: "", color: "transparent", name: "" },
-
-    // Continents (Level 1)
-    { id: "1.1", parent: "0.0", name: "Asia", value: 460000000 },
-    { id: "1.2", parent: "0.0", name: "Africa", value: 130000000 },
-    { id: "1.3", parent: "0.0", name: "Europe", value: 74700000 },
-    { id: "1.4", parent: "0.0", name: "Americas", value: 1000000000 },
-    { id: "1.5", parent: "0.0", name: "Oceania", value: 43000000 },
-
-    // Countries in Asia (Level 2)
-    { id: "2.1", parent: "1.1", name: "China", value: 1400000000 },
-    { id: "2.2", parent: "1.1", name: "India", value: 1360000000 },
-    { id: "2.3", parent: "1.1", name: "Japan", value: 126000000 },
-    { id: "2.1", parent: "1.1", name: "China", value: 1400000000 },
-    { id: "2.2", parent: "1.1", name: "India", value: 1360000000 },
-    { id: "2.3", parent: "1.1", name: "Japan", value: 126000000 },
-    { id: "2.7", parent: "1.4", name: "Germany", value: 83000000 },
-    { id: "2.8", parent: "1.4", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.4", name: "UK", value: 66000000 },
-    { id: "2.1", parent: "1.4", name: "China", value: 1400000000 },
-    { id: "2.2", parent: "1.4", name: "India", value: 1360000000 },
-    { id: "2.3", parent: "1.4", name: "Japan", value: 126000000 },
-
-    { id: "2.7", parent: "1.5", name: "Germany", value: 83000000 },
-    { id: "2.8", parent: "1.5", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.5", name: "UK", value: 66000000 },
-    { id: "2.1", parent: "1.5", name: "China", value: 1400000000 },
-    { id: "2.2", parent: "1.5", name: "India", value: 1360000000 },
-    { id: "2.3", parent: "1.5", name: "Japan", value: 126000000 },
-
-    // Countries in Africa (Level 2)
-    { id: "2.4", parent: "1.2", name: "Nigeria", value: 206000000 },
-    { id: "2.5", parent: "1.2", name: "Ethiopia", value: 112000000 },
-    { id: "2.6", parent: "1.2", name: "Egypt", value: 100000000 },
-
-    { id: "2.7", parent: "1.3", name: "Germany", value: 83000000 },
-    { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
-    { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
-    { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
-
-    { id: "2.8", parent: "1.3", name: "France", value: 67000000 },
-    { id: "2.9", parent: "1.3", name: "UK", value: 66000000 },
-  ];
-
-  const options = {
-    chart: {
-      height: "100%",
-    },
-    title: {
-      text: "Holdings",
-    },
-    subtitle: {},
-    credits: {
-      enabled: false, 
-    },
-
-    series: [
-      {
-        type: "sunburst",
-        data: data,
-        allowTraversingTree: true,
-        cursor: "pointer",
-        dataLabels: {
-          format: "{point.name}",
-          filter: {
-            property: "innerArcLength",
-            operator: ">",
-            value: 16,
-          },
-        },
-        levels: [
-          {
-            level: 1,
-            levelIsConstant: false,
-            dataLabels: {
-              filter: {
-                property: "outerArcLength",
-                operator: ">",
-                value: 64,
-              },
-            },
-          },
-          {
-            level: 2,
-            colorByPoint: true,
-          },
-          {
-            level: 3,
-            colorVariation: {
-              key: "brightness",
-              to: -0.5,
-            },
-          },
-        ],
-      },
-    ],
-    tooltip: {
-      headerFormat: "",
-      pointFormat: "Holdings",
-    },
-  };
-
-  if (!isClient) {
-    return null;
-  }
-
   return (
-    <div>
-      <div className="w-full max-w-lg">
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options}
-          className="h-[450px] w-[100%]"
-        />
-      </div>
+    <div className={`w-full ${className}`}>
+      <div 
+        id="chart-container" 
+        className="md:h-full h-[300px] mx-auto -mt-12"
+      />
+      <style jsx>{`
+        .highcharts-data-table table {
+          @apply font-sans border border-collapse min-w-[320px] max-w-[500px] w-full mx-auto my-2.5 text-center;
+        }
+        .highcharts-data-table caption {
+          @apply py-4 text-lg text-gray-600;
+        }
+        .highcharts-data-table th {
+          @apply font-semibold p-2;
+        }
+        .highcharts-data-table td,
+        .highcharts-data-table th,
+        .highcharts-data-table caption {
+          @apply p-2;
+        }
+        .highcharts-data-table thead tr,
+        .highcharts-data-table tr:nth-child(even) {
+          @apply bg-gray-50;
+        }
+        .highcharts-data-table tr:hover {
+          @apply bg-blue-50;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default SunburstChart;
+export default EggYolkChart;

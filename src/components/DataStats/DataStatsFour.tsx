@@ -44,7 +44,6 @@ const DataStatsFour: React.FC = () => {
     try {
       const response = await fetch(url, options);
       const result = await response.json(); 
-      console.log("Fetched stock data:", result);
 
       // Map the data by symbol for easier access
       const stockDataBySymbol = result.data.reduce((acc: any, stock: any) => {
@@ -54,7 +53,6 @@ const DataStatsFour: React.FC = () => {
 
       return stockDataBySymbol;
     } catch (error) {
-      console.error("Error fetching stock data:", error);
     }
   }
 

@@ -5,11 +5,11 @@ import {
   setLoading, 
   setError,
   logout, 
-  setUser
+  setUser,
+  setPendingRegistration
 } from './authSlice';
-import { LoginInput, RegisterInput, AuthResponse } from '@/types/auth';
+import { LoginInput, RegisterInput, AuthResponse, VerifyOtpInput } from '@/types/auth';
 import client from '@/lib/apollo/client';
-import Cookies from 'js-cookie';
 
 
 const LOGIN_MUTATION = gql`
@@ -22,17 +22,31 @@ const LOGIN_MUTATION = gql`
     }
   }
 `;
-
 const REGISTER_MUTATION = gql`
   mutation Register($input: RegisterInput!) {
     register(input: $input) {
-      id
-      name
-      role
-      # Remove token fields since they're handled by cookies
+      message
+      email
     }
   }
 `;
+
+const VERIFY_REGISTRATION_MUTATION = gql`
+  mutation VerifyRegistration($input: VerifyOtpInput!) {
+    verifyRegistration(input: $input) {
+      id
+      name
+      role
+      accessToken
+      refreshToken
+    }
+  }
+`;
+
+
+
+
+
 
 const GET_ME_QUERY = gql`
   query Me {
@@ -89,18 +103,30 @@ export const registerUser = createAsyncThunk(
       
       const { data } = await client.mutate({
         mutation: REGISTER_MUTATION,
-        variables: { input: registerData },
-        context: {
-          credentials: 'include'
-        }
+        variables: { input: registerData }
       });
       
-      const authResponse: AuthResponse = data.register;
-      dispatch(setCredentials(authResponse));
+      // Store pending registration info
+      dispatch(setPendingRegistration({
+        email: data.register.email,
+        message: data.register.message
+      }));
       
-      return authResponse;
+      return data.register;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      let errorMessage = 'Registration failed';
+      
+      if (error instanceof Error) {
+        // Handle specific error cases
+        if (error.message.includes('USER_EXISTS')) {
+          errorMessage = 'User already exists';
+        } else if (error.message.includes('Invalid phone number')) {
+          errorMessage = 'Invalid phone number format';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       dispatch(setError(errorMessage));
       throw error;
     } finally {
@@ -108,6 +134,46 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
+export const verifyRegistration = createAsyncThunk(
+  'auth/verifyRegistration',
+  async (verifyData: VerifyOtpInput, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+      
+      const { data } = await client.mutate({
+        mutation: VERIFY_REGISTRATION_MUTATION,
+        variables: { input: verifyData },
+        context: {
+          credentials: 'include'
+        },
+      });
+      
+      if (data.verifyRegistration) {
+        dispatch(setCredentials(data.verifyRegistration));
+      }
+
+      return data.verifyRegistration;
+    } catch (error) {
+      let errorMessage = 'OTP verification failed';
+
+      if (error instanceof Error) {
+        if (error.message.includes('INVALID_OTP')) {
+          errorMessage = 'Invalid OTP code';
+        } else if (error.message.includes('VERIFICATION_FAILED')) {
+          errorMessage = 'Verification failed';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      dispatch(setError(errorMessage));
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
 
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',

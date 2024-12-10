@@ -57,12 +57,14 @@ const EggYolkChart: React.FC<ChartProps> = ({ className }) => {
         name: 'Percentage',
         colorByPoint: true,
         data: [
-          { name: 'meezan', y: 25.02 },
-          { name: 'HBL', sliced: true, selected: true, y: 26.71 },
-          { name: 'MARI', y: 10.09 },
-          { name: 'UBL', y: 15.5 },
-          { name: 'BEE', y: 12.68 }
-        ] as DataPoint[]
+          { name: 'Meezan', y: 25.02, color: '#B6D7A8' }, // Pastel green
+          { name: 'HBL', y: 26.71, sliced: true, selected: true, color: '#387ED1' }, // Soft pastel blue
+          { name: 'MARI', y: 10.09, color: '#F9CB9C' }, // Light pastel peach
+          { name: 'UBL', y: 15.5, color: '#D9EAD3' }, // Light mint green
+          { name: 'BEE', y: 12.68, color: '#FCE5CD' }, // Soft beige
+        ] as unknown as DataPoint[],
+        
+        
       }]
     });
   }, []); // Empty dependency array means this effect runs once on mount

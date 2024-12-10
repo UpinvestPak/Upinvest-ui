@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Calendar } from "lucide-react";
+import { BadgeInfo, Calendar, Info } from "lucide-react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useDispatch, useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
@@ -86,6 +86,8 @@ const CommissionTypeRadio: React.FC<CommissionTypeRadioProps> = ({
       className="h-4 w-4 text-primary focus:ring-primary"
     />
     <span className="text-sm font-medium text-gray-700">{label}</span>
+    <Info className="h-5 w-5" />
+
   </label>
 );
 
@@ -115,7 +117,7 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [commissionType, setCommissionType] = useState<CommissionType>(
-    CommissionType.FIXED,
+    CommissionType.STANDARD,
   );
 
   const [addTransactionMutation, { error: mutationError }] = useMutation(
@@ -150,21 +152,15 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
   } = useQuery(GET_ALL_INSTRUMENTS, {
     fetchPolicy: "cache-and-network",
     onCompleted: (data) => {
-      console.log("Complete Data Structure:", data);
-      console.log("All Instruments Data:", JSON.stringify(data, null, 2));
-      console.log("Total Instruments Count:", data.allInstruments?.length);
+     
     },
     onError: (error) => {
-      console.error("Detailed Error Fetching Instruments:", error);
-      console.error("Error Message:", error.message);
-      console.error("Error Details:", JSON.stringify(error, null, 2));
+     
     },
   });
 
   // Optional: Log data and loading states on each render
-  console.log("Instruments Loading:", instrumentsLoading);
-  console.log("Instruments Data:", instrumentsData);
-  console.log("Instruments Error:", instrumentsError);
+ 
 
   useEffect(() => {
     if (isOpen && preSelectedSymbol && instrumentsData?.GetAllInstruments) {
@@ -234,7 +230,6 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    console.log(`Handling input change: ${name} = ${value}`);
 
     setFormData((prev) => {
       const newData = {
@@ -428,53 +423,61 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
             </div>
 
             <div>
-              <h3 className="text-lg font-medium">Commission Type</h3>
-              <div className="mt-2 grid grid-cols-3 gap-4">
-                <CommissionTypeRadio
-                  value={CommissionType.STANDARD}
-                  label="Standard"
-                  selected={commissionType}
-                  onChange={setCommissionType}
-                  disabled={isSubmitting}
-                />
-                <CommissionTypeRadio
-                  value={CommissionType.FIXED}
-                  label="Fixed"
-                  selected={commissionType}
-                  onChange={setCommissionType}
-                  disabled={isSubmitting}
-                />
-                <CommissionTypeRadio
-                  value={CommissionType.CUSTOM}
-                  label="Custom"
-                  selected={commissionType}
-                  onChange={setCommissionType}
-                  disabled={isSubmitting}
-                />
-              </div>
+  <h3 className="text-lg font-medium">Commission Type</h3>
+  <div className="mt-2 grid grid-cols-4 gap-3">
+    <CommissionTypeRadio
+      value={CommissionType.STANDARD}
+      label="Standard"
+      selected={commissionType}
+      onChange={setCommissionType}
+      disabled={isSubmitting}
+    />
+  
+    <CommissionTypeRadio
+      value={CommissionType.FIXED}
+      label="Fixed"
+      selected={commissionType}
+      onChange={setCommissionType}
+      disabled={isSubmitting}
+    />
+    <CommissionTypeRadio
+      value={CommissionType.CUSTOM}
+      label="Custom"
+      selected={commissionType}
+      onChange={setCommissionType}
+      disabled={isSubmitting}
+    />
+    <CommissionTypeRadio
+      value={CommissionType.FIXED}
+      label="N/A"
+      selected={commissionType}
+      onChange={setCommissionType}
+      disabled={isSubmitting}
+    />
+  </div>
+  {commissionType === CommissionType.CUSTOM && (
+    <div className="mt-2">
+      <input
+        type="number"
+        name="commission"
+        value={formData.commission || ""}
+        onChange={handleInputChange}
+        disabled={isSubmitting}
+        className={`w-full rounded-lg border-2 ${
+          errors.commission ? "border-red-500" : "border-gray-200"
+        } p-3`}
+        min="0"
+        step="0.01"
+      />
+      {errors.commission && (
+        <p className="mt-1 text-sm text-red-500">
+          {errors.commission}
+        </p>
+      )}
+    </div>
+  )}
+</div>
 
-              {commissionType === CommissionType.CUSTOM && (
-                <div className="mt-2">
-                  <input
-                    type="number"
-                    name="commission"
-                    value={formData.commission || ""}
-                    onChange={handleInputChange}
-                    disabled={isSubmitting}
-                    className={`w-full rounded-lg border-2 ${
-                      errors.commission ? "border-red-500" : "border-gray-200"
-                    } p-3`}
-                    min="0"
-                    step="0.01"
-                  />
-                  {errors.commission && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.commission}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
 
             {/* Cost Summary */}
             <div className="grid grid-cols-4 gap-4 rounded-lg bg-gray-50 p-4">

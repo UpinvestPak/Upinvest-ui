@@ -9,6 +9,7 @@ import SunburstChart from "@/components/Portfolio/SunburstChart ";
 import React from "react";
 import AddPortolio from "@/components/Portfolio/AddPortolio";
 import TempPortfolio from "@/components/Portfolio/TemPortflio";
+import Tempdividend from "@/components/Portfolio/temDividenid";
 
 function Page() {
   return (
@@ -17,6 +18,8 @@ function Page() {
         <AddPortolio/>
         <div className="ml-2 bg-white">
           <StatsGrid />
+         
+          <PortfolioTable />
           <div className="flex flex-col gap-4 lg:flex-row mt-7">
             <div className=" w-full md:shadow-md lg:mb-0 lg:w-[65%] border-2  ">
               <AssetChart />
@@ -25,8 +28,8 @@ function Page() {
               <Holding />
             </div>
           </div>
-          <PortfolioTable />
           <TempPortfolio/>
+          <Tempdividend/>
           <PayoutTable />
           <HistoryTrade />{" "}
         </div>
