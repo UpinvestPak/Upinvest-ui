@@ -50,11 +50,11 @@ const InstrumentItem: React.FC<InstrumentItemProps> = ({
       disabled={isAdding}
       className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
         isSelected
-          ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
+          ? "bg-primary text-white shadow-lg shadow-blue-500/50"
           : "border-2 border-gray-200 text-gray-400 hover:border-primary hover:text-primary"
       } ${isAdding ? "opacity-50" : ""}`}
     >
-      {isSelected ? <Check className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+      {isSelected ? <Check className="h-5 w-5 bg-primary" /> : <Plus className="h-5 w-5" />}
     </button>
   </div>
 );

@@ -41,12 +41,18 @@ const authSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    clearPendingRegistration: (state) => {
+      state.pendingRegistration = null;
+    },
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
       state.pendingRegistration = null;
 
+    },
+    clearError: (state) => {
+      state.error = null;
     },
   },
 });
@@ -57,7 +63,9 @@ export const {
   setLoading,
   setError,
   logout,
-  setPendingRegistration
+  setPendingRegistration,
+  clearPendingRegistration,
+  clearError,
 } = authSlice.actions;
 
 export default authSlice.reducer;

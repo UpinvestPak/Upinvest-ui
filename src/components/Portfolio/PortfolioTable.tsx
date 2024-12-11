@@ -8,7 +8,8 @@ import {
   FiArrowDown,
   FiTrendingUp,
 } from "react-icons/fi";
-
+import PorflioMenuAction from './PorflioMenuAction'
+import PortfolioMenuAction from "./PorflioMenuAction";
 interface MarketData {
   icon: string;
   name: string;
@@ -249,14 +250,13 @@ const PortfolioTable: React.FC = () => {
       key: "action",
       width: 30,
       responsive: ["md"],
-      render: () => (
-        <div className="flex justify-end">
-          <button
-            className="text-gray-400 hover:text-black"
-            aria-label="More options"
-          >
-            <FiMoreVertical size={20} />
-          </button>
+      render: (_, record) => (
+        <div className="flex justify-center">
+         <PortfolioMenuAction 
+  onCloseTrade={() => console.log('Close trade')}
+  onAddTrade={() => console.log('Add trade')}
+  onAddNotification={() => console.log('Add notification')}
+/>
         </div>
       ),
     },

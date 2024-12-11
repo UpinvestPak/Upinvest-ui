@@ -10,6 +10,7 @@ import React from "react";
 import AddPortolio from "@/components/Portfolio/AddPortolio";
 import TempPortfolio from "@/components/Portfolio/TemPortflio";
 import Tempdividend from "@/components/Portfolio/temDividenid";
+import DividendTable from "@/components/Portfolio/DividendTable";
 
 function Page() {
   return (
@@ -28,7 +29,8 @@ function Page() {
               <Holding />
             </div>
           </div>
-          <TempPortfolio/>
+      
+          <DividendTable/>
           <Tempdividend/>
           <PayoutTable />
           <HistoryTrade />{" "}

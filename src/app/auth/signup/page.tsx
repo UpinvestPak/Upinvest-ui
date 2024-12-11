@@ -1,38 +1,45 @@
-
 // components/auth/RegisterForm.tsx
-"use client"
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
+"use client";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
-import { registerUser } from '@/lib/redux/features/auth/authThunks';
+import { registerUser } from "@/lib/redux/features/auth/authThunks";
 import { AppDispatch, RootState } from "@/lib/redux/store";
-import { FilerType, Role } from '@/types/auth';
+import { FilerType, Role } from "@/types/auth";
+import 'react-toastify/dist/ReactToastify.css';
+import { clearError } from "@/lib/redux/features/auth/authSlice";
+
 
 // Validation schema
-const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, 
-      'Password must contain at least one letter, one number, and one special character'),
-  confirmPassword: z.string(),
-  phoneNumber: z.string()
-  .regex(/^\d{10,15}$/, "Phone number must be greater then 9"),
-  ntnNumber: z.string()
-    .regex(/^[0-9]{7}$/, 'NTN number must be 7 digits'),
-  city: z.string().min(2, 'City is required'),
-  country: z.string().min(2, 'Country is required'),
-  filerType: z.nativeEnum(FilerType)
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        "Password must contain at least one letter, one number, and one special character",
+      ),
+    confirmPassword: z.string(),
+    phoneNumber: z
+      .string()
+      .regex(/^\d{10,15}$/, "Phone number must be greater then 9"),
+    ntnNumber: z.string().regex(/^[0-9]{7}$/, "NTN number must be 7 digits"),
+    city: z.string().min(2, "City is required"),
+    country: z.string().min(2, "Country is required"),
+    filerType: z.nativeEnum(FilerType),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type ValidationSchema = z.infer<typeof registerSchema>;
 
@@ -41,45 +48,77 @@ const RegisterForm = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  const { loading, error } = useSelector((state: RootState) => state.auth);
 
+  const { loading, error } = useSelector((state: RootState) => state.auth);
+  
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<ValidationSchema>({
     resolver: zodResolver(registerSchema),
-    mode: 'onBlur'
+    mode: "onBlur",
   });
+  useEffect(() => {
+    if (error) {
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  }, [error]);
+
 
   const onSubmit = async (data: ValidationSchema) => {
     try {
       // Destructure confirmPassword out of the data object
       const { confirmPassword, ...registrationData } = data;
-      
-      const resultAction = await dispatch(registerUser({
-        ...registrationData,
-        role: Role.USERS,
-    })).unwrap();
-    
-      
-      toast.success('Registration successful! Please check your email for verification.');
-      reset();
-      router.push('/auth/two-step-verification');
+
+      const resultAction = await dispatch(
+        registerUser({
+          ...registrationData,
+          role: Role.USERS,
+        }),
+      ).unwrap();
+
+      toast.success(
+        "Registration successful! Please check your email for verification.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          onClose: () => {
+            reset();
+            router.push("/auth/two-step-verification");
+          },
+        }
+      );
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Registration failed');
+      console.error("Registration error:", err);
     }
   };
 
-  const InputField = ({ 
-    label, 
-    name, 
-    type = 'text', 
-    placeholder, 
+ 
+  const InputField = ({
+    label,
+    name,
+    type = "text",
+    placeholder,
     error,
-    ...rest 
+    ...rest
   }: {
     label: string;
     name: keyof ValidationSchema;
@@ -88,35 +127,31 @@ const RegisterForm = () => {
     error?: string;
   }) => (
     <div className="mb-6">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
         {label}
       </label>
       <div className="relative">
         <input
           type={type}
           className={`
-            w-full px-4 py-3 rounded-lg border
-            ${error ? 'border-red-500' : 'border-gray-300'}
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-            dark:bg-gray-800 dark:border-gray-600 dark:text-white
-            transition-colors duration-200
+            w-full rounded-lg border px-4 py-3
+            ${error ? "border-red-500" : "border-gray-300"}
+            transition-colors duration-200 focus:outline-none
+            focus:ring-2 focus:ring-blue-500 dark:border-gray-600
+            dark:bg-gray-800 dark:text-white
           `}
           placeholder={placeholder}
           {...register(name)}
           {...rest}
         />
-        {error && (
-          <p className="mt-1 text-sm text-red-500">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            <ToastContainer />
+    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 dark:bg-gray-900 sm:px-6 lg:px-8">
+
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="text-center text-3xl font-extrabold text-gray-900 dark:text-white">
@@ -125,7 +160,7 @@ const RegisterForm = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow dark:bg-gray-800 sm:rounded-lg sm:px-10">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <InputField
               label="Full Name"
@@ -205,16 +240,16 @@ const RegisterForm = () => {
             />
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
                 Tax Filing Status
               </label>
               <select
-                {...register('filerType')}
+                {...register("filerType")}
                 className={`
-                  w-full px-4 py-3 rounded-lg border border-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-blue-500
-                  dark:bg-gray-800 dark:border-gray-600 dark:text-white
-                  transition-colors duration-200
+                  w-full rounded-lg border border-gray-300 px-4 py-3
+                  transition-colors duration-200 focus:outline-none
+                  focus:ring-2 focus:ring-blue-500 dark:border-gray-600
+                  dark:bg-gray-800 dark:text-white
                 `}
               >
                 <option value="">Select your status</option>
@@ -233,36 +268,34 @@ const RegisterForm = () => {
                 type="submit"
                 disabled={loading}
                 className={`
-                  w-full flex justify-center py-3 px-4 rounded-lg
-                  text-white bg-blue-600 hover:bg-blue-700
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                  transition-colors duration-200
-                  ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                  flex w-full justify-center rounded-lg bg-blue-600 px-4
+                  py-3 text-white transition-colors
+                  duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2
+                  focus:ring-blue-500 focus:ring-offset-2
+                  ${loading ? "cursor-not-allowed opacity-50" : ""}
                 `}
               >
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? "Registering..." : "Register"}
               </button>
             </div>
 
             {error && (
-              <div className="mt-4 text-center text-red-500">
-                {error}
-              </div>
+              <div className="mt-4 text-center text-red-500">{error}</div>
             )}
 
             <div className="mt-6 text-center text-sm">
               <span className="text-gray-600 dark:text-gray-300">
-                Already have an account?{' '}
+                Already have an account?{" "}
               </span>
-              <Link 
+              <Link
                 href="/auth/signin"
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="font-medium text-blue-600 hover:text-blue-500"
               >
                 Sign in
               </Link>
             </div>
 
-            <ToastContainer/>
+            <ToastContainer />
           </form>
         </div>
       </div>

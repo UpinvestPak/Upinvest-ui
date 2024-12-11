@@ -1,16 +1,21 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { gql } from '@apollo/client';
-import { 
-  setCredentials, 
-  setLoading, 
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { gql } from "@apollo/client";
+import {
+  setCredentials,
+  setLoading,
   setError,
-  logout, 
+  logout,
   setUser,
-  setPendingRegistration
-} from './authSlice';
-import { LoginInput, RegisterInput, AuthResponse, VerifyOtpInput } from '@/types/auth';
-import client from '@/lib/apollo/client';
-
+  setPendingRegistration,
+  clearPendingRegistration
+} from "./authSlice";
+import {
+  LoginInput,
+  RegisterInput,
+  AuthResponse,
+  VerifyOtpInput,
+} from "@/types/auth";
+import client from "@/lib/apollo/client";
 
 const LOGIN_MUTATION = gql`
   mutation Login($input: LoginInput!) {
@@ -18,7 +23,8 @@ const LOGIN_MUTATION = gql`
       id
       name
       role
-      # Remove token fields since they're handled by cookies
+      accessToken
+      refreshToken
     }
   }
 `;
@@ -43,11 +49,6 @@ const VERIFY_REGISTRATION_MUTATION = gql`
   }
 `;
 
-
-
-
-
-
 const GET_ME_QUERY = gql`
   query Me {
     me {
@@ -67,100 +68,112 @@ const LOGOUT_MUTATION = gql`
   }
 `;
 
+const RESEND_OTP_MUTATION = gql`
+  mutation ResendVerificationOtp($email: String!) {
+    resendVerificationOtp(email: $email) {
+      message
+      success
+    }
+  }
+`;
+
 export const loginUser = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async (credentials: LoginInput, { dispatch }) => {
     try {
       dispatch(setLoading(true));
-      
+
       const { data } = await client.mutate({
         mutation: LOGIN_MUTATION,
         variables: { input: credentials },
         context: {
-          credentials: 'include'
-        }
+          credentials: "include",
+        },
       });
 
       const authResponse: AuthResponse = data.login;
       dispatch(setCredentials(authResponse));
-  
+
       return authResponse;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Login failed";
       dispatch(setError(errorMessage));
       throw error;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
-  'auth/register',
+  "auth/register",
   async (registerData: RegisterInput, { dispatch }) => {
     try {
       dispatch(setLoading(true));
-      
+
       const { data } = await client.mutate({
         mutation: REGISTER_MUTATION,
-        variables: { input: registerData }
+        variables: { input: registerData },
       });
-      
+
       // Store pending registration info
-      dispatch(setPendingRegistration({
-        email: data.register.email,
-        message: data.register.message
-      }));
-      
+      dispatch(
+        setPendingRegistration({
+          email: data.register.email,
+          message: data.register.message,
+        }),
+      );
+
       return data.register;
     } catch (error) {
-      let errorMessage = 'Registration failed';
-      
+      let errorMessage = "Registration failed";
+
       if (error instanceof Error) {
         // Handle specific error cases
-        if (error.message.includes('USER_EXISTS')) {
-          errorMessage = 'User already exists';
-        } else if (error.message.includes('Invalid phone number')) {
-          errorMessage = 'Invalid phone number format';
+        if (error.message.includes("USER_EXISTS")) {
+          errorMessage = "User already exists";
+        } else if (error.message.includes("Invalid phone number")) {
+          errorMessage = "Invalid phone number format";
         } else {
           errorMessage = error.message;
         }
       }
-      
+
       dispatch(setError(errorMessage));
       throw error;
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 export const verifyRegistration = createAsyncThunk(
-  'auth/verifyRegistration',
+  "auth/verifyRegistration",
   async (verifyData: VerifyOtpInput, { dispatch }) => {
     try {
       dispatch(setLoading(true));
-      
+
       const { data } = await client.mutate({
         mutation: VERIFY_REGISTRATION_MUTATION,
         variables: { input: verifyData },
         context: {
-          credentials: 'include'
+          credentials: "include",
         },
       });
-      
+
       if (data.verifyRegistration) {
         dispatch(setCredentials(data.verifyRegistration));
       }
 
       return data.verifyRegistration;
     } catch (error) {
-      let errorMessage = 'OTP verification failed';
+      let errorMessage = "OTP verification failed";
 
       if (error instanceof Error) {
-        if (error.message.includes('INVALID_OTP')) {
-          errorMessage = 'Invalid OTP code';
-        } else if (error.message.includes('VERIFICATION_FAILED')) {
-          errorMessage = 'Verification failed';
+        if (error.message.includes("INVALID_OTP")) {
+          errorMessage = "Invalid OTP code";
+        } else if (error.message.includes("VERIFICATION_FAILED")) {
+          errorMessage = "Verification failed";
         } else {
           errorMessage = error.message;
         }
@@ -171,39 +184,38 @@ export const verifyRegistration = createAsyncThunk(
     } finally {
       dispatch(setLoading(false));
     }
-  }
+  },
 );
 
-
 export const fetchCurrentUser = createAsyncThunk(
-  'auth/fetchCurrentUser',
+  "auth/fetchCurrentUser",
   async (_, { dispatch }) => {
     try {
       const { data } = await client.query({
         query: GET_ME_QUERY,
         context: {
-          credentials: 'include'
+          credentials: "include",
         },
-        errorPolicy: 'all' 
+        errorPolicy: "all",
       });
-     
+
       if (data.me) {
         dispatch(setUser(data.me));
         return data.me;
       } else {
         dispatch(logout());
-        throw new Error('No user found');
+        throw new Error("No user found");
       }
     } catch (error) {
-      console.error('Failed to fetch current user:', error);
+      console.error("Failed to fetch current user:", error);
       dispatch(logout());
       throw error;
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk(
-  'auth/logout',
+  "auth/logout",
   async (_, { dispatch }) => {
     try {
       dispatch(setLoading(true));
@@ -211,8 +223,8 @@ export const logoutUser = createAsyncThunk(
       const { data } = await client.mutate({
         mutation: LOGOUT_MUTATION,
         context: {
-          credentials: 'include'
-        }
+          credentials: "include",
+        },
       });
 
       if (data.logout.success) {
@@ -223,7 +235,37 @@ export const logoutUser = createAsyncThunk(
         throw new Error(data.logout.message);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Logout failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Logout failed";
+      dispatch(setError(errorMessage));
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+export const resendVerificationOtp = createAsyncThunk(
+  'auth/resendOtp',
+  async (email: string, { dispatch }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const { data } = await client.mutate({
+        mutation: RESEND_OTP_MUTATION,
+        variables: { email },
+      });
+
+      return data.resendVerificationOtp;
+    } catch (error) {
+      let errorMessage = 'Failed to resend OTP';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('USER_NOT_FOUND')) {
+          errorMessage = 'User not found or already verified';
+        }
+        errorMessage = error.message;
+      }
+
       dispatch(setError(errorMessage));
       throw error;
     } finally {

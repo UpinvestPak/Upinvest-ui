@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { BadgeInfo, Calendar, Info } from "lucide-react";
+import { BadgeInfo, Calendar, InfoIcon } from "lucide-react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useDispatch, useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
@@ -65,7 +65,6 @@ const TradeTypeButton: React.FC<TradeTypeButtonProps> = ({
     {type}
   </button>
 );
-
 const CommissionTypeRadio: React.FC<CommissionTypeRadioProps> = ({
   value,
   label,
@@ -86,8 +85,16 @@ const CommissionTypeRadio: React.FC<CommissionTypeRadioProps> = ({
       className="h-4 w-4 text-primary focus:ring-primary"
     />
     <span className="text-sm font-medium text-gray-700">{label}</span>
-    <Info className="h-5 w-5" />
 
+    {/* Info icon with tooltip only for Standard type */}
+    {value === CommissionType.STANDARD && (
+      <div className="group relative">
+        <InfoIcon className="h-4 w-4 text-black" />
+        <div className=" absolute  bottom-full left-1/2 mb-2 ml-6 hidden -translate-x-1/2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white group-hover:block">
+          Standard commission will be calculated as 0.01%
+        </div>
+      </div>
+    )}
   </label>
 );
 
@@ -151,16 +158,11 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
     error: instrumentsError,
   } = useQuery(GET_ALL_INSTRUMENTS, {
     fetchPolicy: "cache-and-network",
-    onCompleted: (data) => {
-     
-    },
-    onError: (error) => {
-     
-    },
+    onCompleted: (data) => {},
+    onError: (error) => {},
   });
 
   // Optional: Log data and loading states on each render
- 
 
   useEffect(() => {
     if (isOpen && preSelectedSymbol && instrumentsData?.GetAllInstruments) {
@@ -210,11 +212,13 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
   const calculateDeduction = useCallback((): number => {
     switch (commissionType) {
       case CommissionType.FIXED:
-        return 20;
+        return formData.commission || 0; // Use the manually entered fixed amount
+      case CommissionType.NA:
+        return 0;
       case CommissionType.STANDARD:
-        return formData.price * formData.quantity * 0.02;
-      case CommissionType.CUSTOM:
-        return formData.commission;
+        return formData.price * formData.quantity * 0.01;
+      case CommissionType.PERCENTAGE:
+        return formData.price * formData.quantity * (formData.commission / 100); // Calculate based on entered percentage
       default:
         return 0;
     }
@@ -296,7 +300,7 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
         <h3 className="mb-3 text-lg font-medium">Symbol</h3>
         <select
           name="symbol"
-          value={formData.symbol} // This should match exactly with the option value
+          value={formData.symbol}
           onChange={handleInputChange}
           disabled={isSubmitting}
           className={`w-full rounded-lg border-2 ${
@@ -421,89 +425,144 @@ export const BuyTradeModal: React.FC<TradeModalProps> = ({
                 )}
               </div>
             </div>
+            {formData.tradeType === TradeType.LONG && (
+              <div>
+                <h3 className="text-lg font-medium">Commission Type</h3>
 
-            <div>
-  <h3 className="text-lg font-medium">Commission Type</h3>
-  <div className="mt-2 grid grid-cols-4 gap-3">
-    <CommissionTypeRadio
-      value={CommissionType.STANDARD}
-      label="Standard"
-      selected={commissionType}
-      onChange={setCommissionType}
-      disabled={isSubmitting}
-    />
-  
-    <CommissionTypeRadio
-      value={CommissionType.FIXED}
-      label="Fixed"
-      selected={commissionType}
-      onChange={setCommissionType}
-      disabled={isSubmitting}
-    />
-    <CommissionTypeRadio
-      value={CommissionType.CUSTOM}
-      label="Custom"
-      selected={commissionType}
-      onChange={setCommissionType}
-      disabled={isSubmitting}
-    />
-    <CommissionTypeRadio
-      value={CommissionType.FIXED}
-      label="N/A"
-      selected={commissionType}
-      onChange={setCommissionType}
-      disabled={isSubmitting}
-    />
-  </div>
-  {commissionType === CommissionType.CUSTOM && (
-    <div className="mt-2">
-      <input
-        type="number"
-        name="commission"
-        value={formData.commission || ""}
-        onChange={handleInputChange}
-        disabled={isSubmitting}
-        className={`w-full rounded-lg border-2 ${
-          errors.commission ? "border-red-500" : "border-gray-200"
-        } p-3`}
-        min="0"
-        step="0.01"
-      />
-      {errors.commission && (
-        <p className="mt-1 text-sm text-red-500">
-          {errors.commission}
-        </p>
-      )}
-    </div>
-  )}
-</div>
+                <div className="mt-2 grid grid-cols-4 gap-3">
+                  <CommissionTypeRadio
+                    value={CommissionType.STANDARD}
+                    label="Standard"
+                    selected={commissionType}
+                    onChange={setCommissionType}
+                    disabled={isSubmitting}
+                  />
+                  <CommissionTypeRadio
+                    value={CommissionType.FIXED}
+                    label="Fixed"
+                    selected={commissionType}
+                    onChange={setCommissionType}
+                    disabled={isSubmitting}
+                  />
+                  <CommissionTypeRadio
+                    value={CommissionType.PERCENTAGE}
+                    label="Percentage"
+                    selected={commissionType}
+                    onChange={setCommissionType}
+                    disabled={isSubmitting}
+                  />
+                  <CommissionTypeRadio
+                    value={CommissionType.NA}
+                    label="N/A"
+                    selected={commissionType}
+                    onChange={setCommissionType}
+                    disabled={isSubmitting}
+                  />
+                </div>
 
-
+                {/* Add input fields for both Fixed and Percentage types */}
+                {(commissionType === CommissionType.FIXED ||
+                  commissionType === CommissionType.PERCENTAGE) && (
+                  <div className="mt-2">
+                    <div className="relative">
+                      <input
+                        type="number"
+                        name="commission"
+                        value={formData.commission || ""}
+                        onChange={handleInputChange}
+                        disabled={isSubmitting}
+                        className={`w-full rounded-lg border-2 ${
+                          errors.commission
+                            ? "border-red-500"
+                            : "border-gray-200"
+                        } p-3 ${commissionType === CommissionType.PERCENTAGE ? "pr-8" : ""}`}
+                        min="0"
+                        step="0.01"
+                        placeholder={
+                          commissionType === CommissionType.FIXED
+                            ? "Enter fixed amount"
+                            : "Enter percentage"
+                        }
+                      />
+                      {commissionType === CommissionType.PERCENTAGE && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                          %
+                        </span>
+                      )}
+                    </div>
+                    {errors.commission && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.commission}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             {/* Cost Summary */}
-            <div className="grid grid-cols-4 gap-4 rounded-lg bg-gray-50 p-4">
-              <div>
-                <p className="text-sm text-gray-600">Investment</p>
-                <p className="text-sm font-medium">PKR {netCost.toFixed(2)}</p>
+            {formData.tradeType === TradeType.LONG && (
+              <div className="mt-4 grid grid-cols-4 gap-4 rounded-lg bg-gray-50 p-4">
+                <div>
+                  <p className="text-sm text-gray-600">Investment</p>
+                  <p className="text-sm font-medium">
+                    PKR {netCost.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Commission</p>
+                  <p className="text-sm font-medium">
+                    PKR {deduction.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Total Cost</p>
+                  <p className="text-sm font-medium">
+                    PKR {totalCost.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Price/Share</p>
+                  <p className="text-sm font-medium">
+                    PKR {pricePerShare.toFixed(2)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Commission</p>
-                <p className="text-sm font-medium">
-                  PKR {deduction.toFixed(2)}
-                </p>
+            )}
+
+            {formData.tradeType === TradeType.SHORT && (
+              <div className="mt-4 grid grid-cols-3 gap-4 rounded-lg bg-gray-50 p-4">
+                <div>
+                  <p className="text-sm text-gray-600">Total Cost</p>
+                  <p className="text-sm font-medium">
+                    PKR {netCost.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Number of shares</p>
+                  <p className="text-sm font-medium">
+                    PKR {deduction.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Avg buy rate</p>
+                  <p className="text-sm font-medium">
+                    PKR {totalCost.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Profit/Loss</p>
+                  <p className="text-sm font-medium">
+                    PKR {pricePerShare.toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Total Dividends</p>
+                  <p className="text-sm font-medium">
+                    PKR {pricePerShare.toFixed(2)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Total Cost</p>
-                <p className="text-sm font-medium">
-                  PKR {totalCost.toFixed(2)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Price/Share</p>
-                <p className="text-sm font-medium">
-                  PKR {pricePerShare.toFixed(2)}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 

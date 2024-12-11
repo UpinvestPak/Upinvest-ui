@@ -6,7 +6,8 @@ export enum TradeType {
 export enum CommissionType {
   FIXED = "fixed",
   STANDARD = "standard",
-  CUSTOM = "custom"
+  PERCENTAGE = 'PERCENTAGE', // Changed from CUSTOM
+  NA="N/A"
 }
 
 export interface Instrument {
